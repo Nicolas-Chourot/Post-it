@@ -133,6 +133,12 @@ namespace EFA_DEMO.Models
             return log;
         }
 
+        public static void ClearAllLogs(this DBEntities DB)
+        {
+            DB.Logs.RemoveRange(DB.Logs);
+            DB.SaveChanges();
+        }
+
         public static PostView AddPost(this DBEntities DB, PostView postView)
         {
             Post post = postView.ToPost();

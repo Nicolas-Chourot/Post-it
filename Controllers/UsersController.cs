@@ -170,6 +170,13 @@ namespace EFA_DEMO.Controllers
             return null;
         }
 
+        [AdminAccess]
+        public ActionResult ClearAllLogs()
+        {
+            DB.ClearAllLogs();
+            return RedirectToAction("AllUsersLogs");
+        }
+
         public ActionResult About()
         {
             return View();
