@@ -107,6 +107,12 @@ namespace EFA_DEMO.Controllers
             return View(postview);
         }
 
+        public ActionResult Repost(int id)
+        {
+            db.RePost(id);
+            return RedirectToAction("Index");
+        }
+
         public ActionResult ConfirmDelete(int id)
         {
             Post postToDelete = db.Posts.Find(id);

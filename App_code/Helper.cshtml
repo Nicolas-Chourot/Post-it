@@ -112,6 +112,7 @@
             </div>
             @if (postView.UserId == user.Id || user.Admin)
             {
+                @Helper.GlyphiconAction("Repost/" + postView.Id, "glyphicon-circle-arrow-up", "Re poster " + postView.Title)
                 @Helper.GlyphiconAction("Edit/" + postView.Id, "glyphicon-edit", "Modifier " + postView.Title)
                 @Helper.GlyphiconAction("ConfirmDelete/" + postView.Id, "glyphicon-remove-circle", "Effacer " + postView.Title)
             }

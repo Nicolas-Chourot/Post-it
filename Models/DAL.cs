@@ -59,19 +59,22 @@ namespace EFA_DEMO.Models
             {
                 foreach(var post in DB.Posts.ToList())
                 {
-                    if (post.Tags.ToLower().Contains(tag.ToLower()))
+                    if (post.Tags != null)
                     {
-                        bool found = false;
-                        foreach(var p in posts)
+                        if (post.Tags.ToLower().Contains(tag.ToLower()))
                         {
-                            if (p.Id == post.Id)
+                            bool found = false;
+                            foreach (var p in posts)
                             {
-                                found = true;
-                                break;
+                                if (p.Id == post.Id)
+                                {
+                                    found = true;
+                                    break;
+                                }
                             }
+                            if (!found)
+                                posts.Add(post);
                         }
-                        if (!found)
-                            posts.Add(post);
                     }
                 }
             }
@@ -147,6 +150,7 @@ namespace EFA_DEMO.Models
             PostsLastUpdate = DateTime.Now;
             return post.ToPostView();
         }
+
         public static bool UpdatePost(this DBEntities DB, PostView postView)
         {
             Post postToUpdate = DB.Posts.Find(postView.Id);
@@ -156,6 +160,17 @@ namespace EFA_DEMO.Models
             PostsLastUpdate = DateTime.Now;
             return true;
         }
+
+        public static bool RePost(this DBEntities DB, int id)
+        {
+            Post postToUpdate = DB.Posts.Find(id);
+            postToUpdate.CreationDate = DateTime.Now;
+            DB.Entry(postToUpdate).State = EntityState.Modified;
+            DB.SaveChanges();
+            PostsLastUpdate = DateTime.Now;
+            return true;
+        }
+
         public static bool RemovePost(this DBEntities DB, int Id)
         {
             Post postToDelete = DB.Posts.Find(Id);
