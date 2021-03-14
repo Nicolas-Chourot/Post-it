@@ -1,0 +1,27 @@
+﻿@{
+    ViewBag.Title = "Index";
+}
+
+<br />
+@if ((string)Session["Tags"] != "")
+{
+    <h2>Recherche par étiquettes</h2>
+    string[] tags = ((string)Session["Tags"]).Split(' ');
+    foreach (var tag in tags)
+    {
+        <span class="tag">#@tag &nbsp;</span>
+    }
+    @Helper.GlyphiconAction("ClearTag/", "glyphicon-remove-circle", "Effacer ")
+    <hr />
+}
+<div class="postsContainer" id="postsContainer">
+    @{ Html.RenderAction("Posts"); }
+</div>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/partialRefresh")
+
+    <script>
+        $(() => { PartialRefresh("@Url.Action("Posts")", "postsContainer", 1); });
+    </script>
+}

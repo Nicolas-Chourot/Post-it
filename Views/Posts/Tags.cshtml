@@ -1,0 +1,21 @@
+﻿@model EFA_DEMO.Models.PostView
+@{
+    var tags = (string)Session["Tags"];
+}
+<h2>@Helper.GlyphiconAction("Index", "glyphicon-arrow-left", "Retour ")Étiquettes recherchées</h2>
+<hr />
+@using (Html.BeginForm())
+{
+    <div class="form-horizontal">
+        <div class="form-group">
+            <div class="col-md-10">
+                <input type="text" name="tags" class="form-control" value="@tags" />
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <input type="submit" value="Soumettre" class="btn btn-success" />
+            </div>
+        </div>
+    </div>
+}

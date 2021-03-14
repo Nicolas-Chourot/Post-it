@@ -1,0 +1,124 @@
+﻿@helper ImageUploader(int id, string imageSrc, string controlId = "ImageControl", string waitingImage = "", string TooltipMessage = "", string ToolTipPlacement = "bottom")
+{
+    var Url = new System.Web.Mvc.UrlHelper(HttpContext.Current.Request.RequestContext);
+    imageSrc = Url.Content(imageSrc);
+    controlId = Url.Content(controlId);
+    waitingImage = Url.Content(waitingImage);
+    <fieldset>
+        <div class='imageUploader' id='@id' controlId='@controlId' imageSrc='@imageSrc' waitingImage='@waitingImage'
+             data-toggle="tooltip"
+             data-placement="@ToolTipPlacement"
+             title="@TooltipMessage"> </div>
+    </fieldset>
+}
+
+@helper AvatarProfilLink(EFA_DEMO.Models.UserView user)
+{
+    var Url = new System.Web.Mvc.UrlHelper(HttpContext.Current.Request.RequestContext);
+    var avatarUrl = Url.Content(user.GetAvatarURL());
+    var linkUrl = Url.Action("Profil", "Users");
+    <a href="@linkUrl" data-toogle="tooltip" title="Modifier le profil">
+        <div class="smallAvatar"
+             style="background: url(@avatarUrl) no-repeat center center; background-size: cover;"></div>
+        <span class="menuTitle">&nbsp;@user.FullName</span>
+    </a>
+}
+@helper AvatarUser(EFA_DEMO.Models.UserView user)
+{
+    var Url = new System.Web.Mvc.UrlHelper(HttpContext.Current.Request.RequestContext);
+    var avatarUrl = Url.Content(user.GetAvatarURL());
+    <div>
+        <div class="smallAvatar"
+             style="background: url(@avatarUrl) no-repeat center center; background-size: cover; float:left;"></div>
+        <span>&nbsp;@user.FullName</span>
+    </div>
+    <br />
+}
+
+
+@helper GlyphiconAction(string Action, string glyphiconClass, string TooltipMessage, string ToolTipPlacement = "bottom")
+{
+    var Url = new System.Web.Mvc.UrlHelper(HttpContext.Current.Request.RequestContext);
+    <a href="@Url.Action(Action)">
+        <span class="glyphicon glyphiconStyle @glyphiconClass"
+              title="@TooltipMessage"
+              data-placement="@ToolTipPlacement">
+        </span>
+    </a>
+}
+
+@helper GlyphiconControllerAction(string controller, string Action, string glyphiconClass, string TooltipMessage, string ToolTipPlacement = "bottom")
+{
+    var Url = new System.Web.Mvc.UrlHelper(HttpContext.Current.Request.RequestContext);
+    <a href="@Url.Action(Action, controller)">
+        <span class="glyphicon glyphiconStyle @glyphiconClass"
+              title="@TooltipMessage"
+              data-placement="@ToolTipPlacement">
+        </span>
+    </a>
+}
+
+
+@helper ParseContent(string content)
+{
+    string[] tokens = content.Split(' ');
+    foreach (var token in tokens)
+    {
+        var t = token.ToLower();
+        if (t.Contains("http://") || t.Contains("https://"))
+        {
+            if (t.Contains(".jpg") || t.Contains(".png") || t.Contains(".bmp"))
+            {
+                <a href="@token" target="_blank">
+                    <img class="contentImage" src="@token" alt="" />
+                </a>
+            }
+            else
+            {
+                <a href="@token" target="_blank">@token</a>
+            }
+        }
+        else
+        {
+            <span>@token</span>
+        }
+    }
+}
+
+@helper Tags(string tags)
+{
+    var Url = new System.Web.Mvc.UrlHelper(HttpContext.Current.Request.RequestContext);
+    if (tags != null)
+    {
+        string[] tagsArray = tags.Split(' ');
+        foreach (var tag in tagsArray)
+        {
+            var linkUrl = Url.Action("SetTag", "Posts") + "?tag=" + tag;
+            <a href="@linkUrl">#@tag</a>
+        }
+    }
+}
+
+@helper Post(EFA_DEMO.Models.PostView postView, EFA_DEMO.Models.UserView user)
+{
+    <div class="post">
+        <div class="postHeader">
+            @postView.CreationDate.ToLongDateString() - @postView.CreationDate.ToShortTimeString()
+            @Helper.AvatarUser(postView.User)
+        </div>
+        <div class="postTitle">
+            <div class="title">
+                @postView.Title
+            </div>
+            @if (postView.UserId == user.Id || user.Admin)
+            {
+                @Helper.GlyphiconAction("Edit/" + postView.Id, "glyphicon-edit", "Modifier " + postView.Title)
+                @Helper.GlyphiconAction("ConfirmDelete/" + postView.Id, "glyphicon-remove-circle", "Effacer " + postView.Title)
+            }
+        </div>
+        <div class="postContent">@Helper.ParseContent(postView.Content)</div>
+        <div class="tags">
+            @Helper.Tags(postView.Tags)
+        </div>
+    </div>
+}

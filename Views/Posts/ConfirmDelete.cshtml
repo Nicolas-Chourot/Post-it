@@ -1,0 +1,16 @@
+﻿@model EFA_DEMO.Models.PostView
+
+<h2 style="float:left; margin-right:15px;">
+    @Helper.GlyphiconAction("Index", "glyphicon-arrow-left", "Retour ")Effacer ce post?
+</h2>
+<div style="float:unset; margin-top:20px;">
+    @using (Html.BeginForm())
+    {
+        @Html.Hidden("Id", Model.Id)
+        <input type="submit" value="Effacer" class="btn btn-danger" />
+    }
+</div>
+<br />
+<br />
+@Helper.Post(Model, OnlineUsers.CurrentUser)
+

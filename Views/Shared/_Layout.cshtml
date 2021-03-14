@@ -1,0 +1,79 @@
+﻿@{
+    EFA_DEMO.Models.UserView onlineUser = EFA_DEMO.Models.OnlineUsers.CurrentUser;
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewBag.Title - Postit</title>
+    @Styles.Render("~/Content/css")
+    @Scripts.Render("~/bundles/modernizr")
+</head>
+<body>
+    <div class="navbar navbar-inverse navbar-fixed-top">
+        <div class="container">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+               
+                <table>
+                    <tr>
+                        <td><img src="@Url.Content("~/Content/Post-it.png")" style="height:32px; margin:5px;"></td>
+                        <td> @Html.ActionLink("Post-it", "Index", "Posts", new { area = "" }, new { @class = "navbar-brand applicationName" })</td>
+                    </tr>
+                </table>
+            </div>
+            <div class="navbar-collapse collapse">
+                <ul class="nav navbar-nav">
+                    @if (onlineUser != null)
+                    {
+                        <li>
+                            @Helper.GlyphiconControllerAction("Posts", "Create", "glyphicon-plus", "Ajouter un post...")
+                        </li>
+                        <li>
+                            @Helper.GlyphiconControllerAction("Posts", "Tags", "glyphicon-tags", "Recherche par étiquettes...")
+                        </li>
+                        <li style="color:lightgreen; font-weight:bold">
+                            @Helper.AvatarProfilLink(onlineUser)
+                        </li>
+                        if (onlineUser.Admin)
+                        {
+                            <li>
+                                @Helper.GlyphiconControllerAction("Users", "AllUsersLogs", "glyphicon-calendar", "Logs des usagers...")
+                            </li>
+                        }
+                        else
+                        {
+                            <li>
+                                @Helper.GlyphiconControllerAction("Users", "UserLogs", "glyphicon-calendar", "Logs des usagers...")
+                            </li>
+                        }
+                        <li>@Helper.GlyphiconControllerAction("Users", "Index", "glyphicon-user", "Usagers en ligne...")</li>
+
+                        <li>
+                            @Helper.GlyphiconControllerAction("Users", "Logout", "glyphicon-log-out", "Déconnexion")
+                        </li>
+                    }
+                   
+                    <li>
+                        @Helper.GlyphiconControllerAction("Users", "About", "glyphicon-question-sign", "À propos...")
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="container body-content">
+        @RenderBody()
+        <hr />
+    </div>
+
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/bootstrap")
+    @RenderSection("scripts", required: false)
+</body>
+</html>
