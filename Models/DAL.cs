@@ -47,7 +47,7 @@ namespace EFA_DEMO.Models
                 Tags = post.Tags,
                 UserId = post.UserId,
                 CreationDate = post.CreationDate,
-                User = (post.User != null? post.User.ToUserView(): null)
+                User = (post.User != null ? post.User.ToUserView() : null)
             };
         }
 
@@ -55,35 +55,31 @@ namespace EFA_DEMO.Models
         {
             List<Post> posts = new List<Post>();
             string[] tagArray = tags.Split(' ');
-            foreach(var tag in tagArray)
+
+            foreach (var post in DB.Posts.ToList())
             {
-                foreach(var post in DB.Posts.ToList())
+                if (post.Tags != null)
                 {
-                    if (post.Tags != null)
+                    bool containsAllTags = true;
+                    foreach (var tag in tagArray)
                     {
-                        if (post.Tags.ToLower().Contains(tag.ToLower()))
+                        if (!post.Tags.ToLower().Contains(tag.ToLower()))
                         {
-                            bool found = false;
-                            foreach (var p in posts)
-                            {
-                                if (p.Id == post.Id)
-                                {
-                                    found = true;
-                                    break;
-                                }
-                            }
-                            if (!found)
-                                posts.Add(post);
+                            containsAllTags = false;
+                            break;
                         }
                     }
+                    if (containsAllTags)
+                        posts.Add(post);
                 }
             }
+
             return posts;
         }
         public static List<PostView> ToPostViewList(this IEnumerable<Post> posts)
         {
             List<PostView> postViews = new List<PostView>();
-            foreach(var post in posts)
+            foreach (var post in posts)
             {
                 postViews.Add(post.ToPostView());
             }
@@ -135,7 +131,6 @@ namespace EFA_DEMO.Models
             DB.SaveChanges();
             return log;
         }
-
         public static void ClearAllLogs(this DBEntities DB)
         {
             DB.Logs.RemoveRange(DB.Logs);
@@ -150,7 +145,6 @@ namespace EFA_DEMO.Models
             PostsLastUpdate = DateTime.Now;
             return post.ToPostView();
         }
-
         public static bool UpdatePost(this DBEntities DB, PostView postView)
         {
             Post postToUpdate = DB.Posts.Find(postView.Id);
@@ -160,7 +154,6 @@ namespace EFA_DEMO.Models
             PostsLastUpdate = DateTime.Now;
             return true;
         }
-
         public static bool RePost(this DBEntities DB, int id)
         {
             Post postToUpdate = DB.Posts.Find(id);
@@ -170,7 +163,6 @@ namespace EFA_DEMO.Models
             PostsLastUpdate = DateTime.Now;
             return true;
         }
-
         public static bool RemovePost(this DBEntities DB, int Id)
         {
             Post postToDelete = DB.Posts.Find(Id);
