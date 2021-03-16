@@ -30,10 +30,11 @@
     <div>
         <div class="smallAvatar"
              style="background: url(@avatarUrl) no-repeat center center; background-size: cover; float:left;"></div>
-        <span>&nbsp;@user.FullName</span>
+        <div class="ellipsis">&nbsp;@user.FullName</div>
     </div>
     <br />
 }
+
 
 
 @helper GlyphiconAction(string Action, string glyphiconClass, string TooltipMessage, string ToolTipPlacement = "bottom")
@@ -75,12 +76,27 @@
             }
             else
             {
-                <a href="@token" target="_blank">@token</a>
+                if (token.Contains("https://www.youtube.com/watch?v="))
+                {
+                    string youtubeId = token.Replace("https://www.youtube.com/watch?v=", "");
+                    if (youtubeId.IndexOf("&") > -1)
+                    {
+                        youtubeId = youtubeId.Substring(0, youtubeId.IndexOf("&"));
+                    }
+                    string youtubeThumbnail = "http://i3.ytimg.com/vi/" + youtubeId + "/maxresdefault.jpg";
+                    <a href="@token" target="_blank">
+                        <img class="contentImage" src="@youtubeThumbnail" alt="" />
+                    </a>
+                }
+                else
+                {
+                    <a href="@token" target="_blank">@token</a>
+                }
             }
         }
         else
         {
-            <span>@token</span>
+            <span> @token </span>
         }
     }
 }

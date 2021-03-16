@@ -14,9 +14,7 @@
 <div class="form-horizontal" style="color:white">
     <hr />
     @Html.ValidationSummary(true, "", new { @class = "text-danger" })
-    @Html.HiddenFor(model => model.Id)
     @Html.HiddenFor(model => model.AvatarId)
-    @Html.HiddenFor(model => model.Admin)
     @Html.Hidden("PasswordChangeToken", (string)ViewBag.PasswordChangeToken)
 
     <div class="form-group">

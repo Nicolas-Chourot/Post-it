@@ -68,6 +68,7 @@ namespace EFA_DEMO.Controllers
             if (ModelState.IsValid)
             {
                 postView.UserId = OnlineUsers.CurrentUser.Id;
+                postView.CreationDate = DateTime.Now;
                 db.AddPost(postView);
                 return RedirectToAction("Index");
             }
@@ -83,12 +84,17 @@ namespace EFA_DEMO.Controllers
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
             Post post = db.Posts.Find(id);
+            Session["editPostId"] = post.Id;
+            Session["editPostUserId"] = post.UserId;
+            Session["editPostCreationDate"] = post.CreationDate;
             if (post == null)
             {
                 return HttpNotFound();
             }
-            ViewBag.UserId = new SelectList(db.Users, "Id", "AvatarId", post.UserId);
-            return View(post.ToPostView());
+            PostView postview = post.ToPostView();
+            if (postview.IsOwner(OnlineUsers.CurrentUser))
+                return View(post.ToPostView());
+            return RedirectToAction("Logout", "Users");
         }
 
         // POST: Posts/Edit/5
@@ -100,6 +106,9 @@ namespace EFA_DEMO.Controllers
         {
             if (ModelState.IsValid)
             {
+                postview.Id = (int)Session["editPostId"];
+                postview.UserId = (int)Session["editPostUserId"];
+                postview.CreationDate = (DateTime)Session["editPostCreationDate"];
                 db.UpdatePost(postview);
                 return RedirectToAction("Index");
             }
@@ -116,9 +125,16 @@ namespace EFA_DEMO.Controllers
         public ActionResult ConfirmDelete(int id)
         {
             Post postToDelete = db.Posts.Find(id);
+           
             if (postToDelete != null)
-                return View(postToDelete.ToPostView());
-            return RedirectToAction("Index");
+            {
+                PostView postview = postToDelete.ToPostView();
+                if (postview.IsOwner(OnlineUsers.CurrentUser))
+                {
+                    return View(postToDelete.ToPostView());
+                }
+            }
+            return RedirectToAction("Logout", "Users");
         }
 
         [HttpPost]
@@ -154,7 +170,6 @@ namespace EFA_DEMO.Controllers
             return RedirectToAction("Index");
         }
 
-       
         protected override void Dispose(bool disposing)
         {
             if (disposing)

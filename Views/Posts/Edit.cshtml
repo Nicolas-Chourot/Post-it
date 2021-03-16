@@ -6,7 +6,8 @@
 
 <h2>@Helper.GlyphiconAction("Index", "glyphicon-arrow-left", "Retour ")Modification</h2>
 <hr />
-@if (OnlineUsers.CurrentUser.Id != Model.User.Id)
+
+@if (OnlineUsers.CurrentUser.Id != Model.UserId)
 {
     <h2>
         @Helper.AvatarUser(Model.User)
@@ -19,10 +20,7 @@
     <div class="form-horizontal">
 
         @Html.ValidationSummary(true, "", new { @class = "text-danger" })
-        @Html.HiddenFor(model => model.Id)
-        @Html.HiddenFor(model => model.UserId)
-        @Html.HiddenFor(model => model.CreationDate)
-
+      
         <div class="form-group">
             <div class="col-md-10">
                 @Html.EditorFor(model => model.Title, new { htmlAttributes = new { @class = "form-control", @placeholder = "Titre" } })

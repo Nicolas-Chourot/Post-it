@@ -26,6 +26,11 @@ namespace EFA_DEMO.Models
             CreationDate = DateTime.Now;
         }
 
+        public bool IsOwner(UserView user)
+        {
+            return (user.Admin || UserId == user.Id);
+        }
+
         public Post ToPost()
         {
             return new Post()

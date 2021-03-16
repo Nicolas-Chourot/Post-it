@@ -64,6 +64,7 @@ namespace EFA_DEMO.Controllers
                     ModelState.AddModelError("UserName", "Ce nom d'usager existe déjà.");
                     return View(userView);
                 }
+                userView.Admin = false;
                 userView.Password = userView.NewPassword;
                 DB.AddUser(userView);
                 return RedirectToAction("Login");
@@ -117,6 +118,7 @@ namespace EFA_DEMO.Controllers
         public ActionResult Profil()
         {
             UserView userView = OnlineUsers.CurrentUser;
+
             ViewBag.PasswordChangeToken = Guid.NewGuid().ToString().Substring(0,8);
             return View(userView);
         }
@@ -128,6 +130,8 @@ namespace EFA_DEMO.Controllers
                 string PasswordChangeToken = (string)Request["PasswordChangeToken"];
                 if (userview.NewPassword.Equals(PasswordChangeToken))
                 {
+                    userview.Id = OnlineUsers.CurrentUser.Id;
+                    userview.Admin = OnlineUsers.CurrentUser.Admin;
                     User user = DB.Users.Find(userview.Id);
                     userview.Password = user.Password;
                 }
