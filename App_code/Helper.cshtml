@@ -68,35 +68,51 @@
         var t = token.ToLower();
         if (t.Contains("http://") || t.Contains("https://"))
         {
-            if (t.Contains(".jpg") || t.Contains(".png") || t.Contains(".bmp"))
+            if (t.Contains(".webp"))
             {
-                <a href="@token" target="_blank">
-                    <img class="contentImage" src="@token" alt="" />
-                </a>
+                var image = token.Replace(".webp", "");
+                var webp = image + ".webp";
+                var png = image + ".png";
+                var jpg = image + ".jpg";
+                <picture>
+                    <source type="image/webp" srcset="@webp">
+                    <source type="image/png" srcset="@png">
+                    <img src="@jpg" style="width: 100%;">
+                </picture>
             }
             else
             {
-                if (token.Contains("https://www.youtube.com/watch?v="))
+                if (t.Contains(".jpg") || t.Contains(".png") || t.Contains(".bmp"))
                 {
-                    string youtubeId = token.Replace("https://www.youtube.com/watch?v=", "");
-                    if (youtubeId.IndexOf("&") > -1)
-                    {
-                        youtubeId = youtubeId.Substring(0, youtubeId.IndexOf("&"));
-                    }
-                    string youtubeThumbnail = "http://i3.ytimg.com/vi/" + youtubeId + "/maxresdefault.jpg";
+
                     <a href="@token" target="_blank">
-                        <img class="contentImage" src="@youtubeThumbnail" alt="" />
+                        <img class="contentImage" src="@token" alt="" />
                     </a>
                 }
                 else
                 {
-                    <a href="@token" target="_blank">@token</a>
+                    if (token.Contains("https://www.youtube.com/watch?v="))
+                    {
+                        string youtubeId = token.Replace("https://www.youtube.com/watch?v=", "");
+                        if (youtubeId.IndexOf("&") > -1)
+                        {
+                            youtubeId = youtubeId.Substring(0, youtubeId.IndexOf("&"));
+                        }
+                        string youtubeThumbnail = "http://i3.ytimg.com/vi/" + youtubeId + "/maxresdefault.jpg";
+                        <a href="@token" target="_blank">
+                            <img class="contentImage" src="@youtubeThumbnail" alt="" />
+                        </a>
+                    }
+                    else
+                    {
+                        <a href="@token" target="_blank">@token</a>
+                    }
                 }
             }
         }
         else
         {
-            <span> @token </span>
+            <span>@token</span>
         }
     }
 }

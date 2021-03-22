@@ -171,5 +171,27 @@ namespace EFA_DEMO.Models
             PostsLastUpdate = DateTime.Now;
             return true;
         }
+
+        public static List<string> GetAllTags(this DBEntities DB)
+        {
+            List<string> tags = new List<string>();
+            foreach (Post post in DB.Posts)
+            {
+                if (post.Tags != null)
+                {
+                    string[] pTags = post.Tags.Split(' ');
+                    if (pTags != null)
+                    {
+                        foreach (string pTag in pTags)
+                        {
+                            var pt = pTag.ToLower();
+                            if (!tags.Contains(pt))
+                                tags.Add(pt);
+                        }
+                    }
+                }
+            }
+            return tags.OrderBy(s => s).ToList();
+        }
     }
 }

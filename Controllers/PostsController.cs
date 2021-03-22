@@ -149,10 +149,10 @@ namespace EFA_DEMO.Controllers
             return View();
         }
         [HttpPost]
-        public ActionResult Tags(string tags)
+        public ActionResult Tags(string Tags)
         {
             PostsLastUpdate = new DateTime(0);
-            Session["Tags"] = tags;
+            Session["Tags"] = Tags.Trim();
             return RedirectToAction("Index");
         }
 
@@ -168,6 +168,11 @@ namespace EFA_DEMO.Controllers
             PostsLastUpdate = new DateTime(0);
             Session["Tags"] = "";
             return RedirectToAction("Index");
+        }
+
+        public ActionResult GetAllTags()
+        {
+            return new JsonResult { Data = db.GetAllTags(), JsonRequestBehavior = JsonRequestBehavior.AllowGet };
         }
 
         protected override void Dispose(bool disposing)
