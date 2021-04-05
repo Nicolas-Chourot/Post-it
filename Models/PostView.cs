@@ -20,10 +20,18 @@ namespace EFA_DEMO.Models
         public int UserId { get; set; }
         [Display(Name = "Usager")]
         public UserView User { get; set; }
+        public int LikeCount { get; set; }
+        public bool CurrentUserLike { get; set; }
+        public bool EditMode { get; set; }
+
+        public int ParentPostId { get; set; }
+        public ICollection<PostsChild> PostsChilds { get; set; }
 
         public PostView()
         {
             CreationDate = DateTime.Now;
+            CurrentUserLike = false;
+            EditMode = false;
         }
 
         public bool IsOwner(UserView user)
@@ -40,7 +48,9 @@ namespace EFA_DEMO.Models
                 Content = this.Content,
                 CreationDate = this.CreationDate,
                 Tags = this.Tags,
-                UserId = this.UserId
+                UserId = this.UserId,
+                LikeCount = this.LikeCount,
+                ParentPostId = this.ParentPostId
             };
         }
 
@@ -52,6 +62,22 @@ namespace EFA_DEMO.Models
             post.CreationDate = CreationDate;
             post.Tags = Tags;
             post.UserId = UserId;
+            post.LikeCount = LikeCount;
+            post.ParentPostId = ParentPostId;
+        }
+
+        public void Copy(Post post)
+        {
+            Id = post.Id;
+            Title = post.Title;
+            Content = post.Content;
+            CreationDate = post.CreationDate;
+            Tags = post.Tags;
+            UserId = post.UserId;
+            User = (post.User != null ? post.User.ToUserView() : null);
+            LikeCount = post.LikeCount;
+            ParentPostId = post.ParentPostId;
+            PostsChilds = post.PostsChilds;
         }
     }
 }

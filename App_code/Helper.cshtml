@@ -23,6 +23,7 @@
         <span class="menuTitle">&nbsp;@user.FullName</span>
     </a>
 }
+
 @helper AvatarUser(EFA_DEMO.Models.UserView user)
 {
     var Url = new System.Web.Mvc.UrlHelper(HttpContext.Current.Request.RequestContext);
@@ -30,13 +31,65 @@
     <div>
         <div class="smallAvatar"
              style="background: url(@avatarUrl) no-repeat center center; background-size: cover; float:left;"></div>
-        <div class="ellipsis">&nbsp;@user.FullName</div>
+        <div class="ellipsis" style="float:none;">&nbsp;@user.FullName</div>
     </div>
     <br />
 }
 
+@helper When(DateTime date)
+{
+    TimeSpan span = DateTime.Now.Subtract(date);
+    if (span.Days > 0)
+    {
+        <div style="float:left">@date.ToLongDateString() - </div>
+        <div class="glyphicon glyphicon-time smallGlyphicon" title="@date.ToShortTimeString()" data-placement="right"></div>
+    }
+    else
+    {
+        if (span.Hours > 1)
+        {
+            <span>@span.Hours heures</span>
+        }
+        else
+        {
+            if (span.Minutes > 1)
+            {
+                <span>@span.Minutes minutes</span>
+            }
+            else
+            {
+                <span>à l'instant</span>
+            }
+        }
+    }
+}
 
+@helper Poster(EFA_DEMO.Models.UserView user, DateTime date)
+{
+    var Url = new System.Web.Mvc.UrlHelper(HttpContext.Current.Request.RequestContext);
+    var avatarUrl = Url.Content(user.GetAvatarURL());
+    <div style="margin-top:-6px;">
+        <div class="mediumAvatar"
+             style="background: url(@avatarUrl) no-repeat center center; background-size: cover; float:left;">
+        </div>
+        <div class="nameDate">
+            <div class="ellipsis">@user.FullName</div>
+            <div class="ellipsis">@Helper.When(date)</div>
+        </div>
+    </div>
+    <br />
+}
 
+@helper GlyphiconCmd(string glyphiconClass, string TooltipMessage, string ToolTipPlacement = "bottom")
+{
+    var Url = new System.Web.Mvc.UrlHelper(HttpContext.Current.Request.RequestContext);
+    <div style="cursor:pointer">
+        <span class="glyphicon glyphiconStyle @glyphiconClass"
+              title="@TooltipMessage"
+              data-placement="@ToolTipPlacement">
+        </span>
+    </div>
+}
 @helper GlyphiconAction(string Action, string glyphiconClass, string TooltipMessage, string ToolTipPlacement = "bottom")
 {
     var Url = new System.Web.Mvc.UrlHelper(HttpContext.Current.Request.RequestContext);
@@ -46,6 +99,51 @@
               data-placement="@ToolTipPlacement">
         </span>
     </a>
+}
+@helper GlyphiconActionAndParams(string Action, string parameters, string glyphiconClass, string TooltipMessage, string ToolTipPlacement = "bottom")
+{
+    var Url = new System.Web.Mvc.UrlHelper(HttpContext.Current.Request.RequestContext);
+    string actionUrl = Url.Action(Action) + parameters;
+    <a href="@actionUrl">
+        <span class="glyphicon glyphiconStyle @glyphiconClass"
+              title="@TooltipMessage"
+              data-placement="@ToolTipPlacement">
+        </span>
+    </a>
+}
+@helper GlyphiconConfirmAction(string Action, string glyphiconClass, string TooltipMessage, string ToolTipPlacement = "bottom")
+{
+    var Url = new System.Web.Mvc.UrlHelper(HttpContext.Current.Request.RequestContext);
+    <div onclick='confirm("@TooltipMessage","@Url.Action(Action)")'>
+        <span class="glyphicon glyphiconStyle @glyphiconClass"
+              title="@TooltipMessage"
+              data-placement="@ToolTipPlacement">
+        </span>
+    </div>
+}
+
+@helper GlyphiconAjaxAction(string Action, string glyphiconClass, string TooltipMessage, string ToolTipPlacement = "bottom")
+{
+    var Url = new System.Web.Mvc.UrlHelper(HttpContext.Current.Request.RequestContext);
+    <div onclick='ajaxActionCall("@Url.Action(Action)")'>
+        <span class="glyphicon glyphiconStyle @glyphiconClass"
+              title="@TooltipMessage"
+              data-placement="@ToolTipPlacement">
+        </span>
+    </div>
+}
+
+@helper GlyphiconAjaxControllerAction(string controller, string Action, string glyphiconClass, string TooltipMessage, string ToolTipPlacement = "bottom")
+{
+    var Url = new System.Web.Mvc.UrlHelper(HttpContext.Current.Request.RequestContext);
+    <div onclick='ajaxActionCall("@Url.Action(Action, controller)")'>
+        <div style="margin-top:12px;margin-left:12px">
+            <span class="glyphicon glyphiconStyle @glyphiconClass"
+                  title="@TooltipMessage"
+                  data-placement="@ToolTipPlacement">
+            </span>
+        </div>
+    </div>
 }
 
 @helper GlyphiconControllerAction(string controller, string Action, string glyphiconClass, string TooltipMessage, string ToolTipPlacement = "bottom")
@@ -112,7 +210,14 @@
         }
         else
         {
-            <span>@token</span>
+            if (t.Contains("[hr]"))
+            {
+                <hr />
+            }
+            else
+            {
+                <span>@token</span>
+            }
         }
     }
 }
@@ -133,25 +238,210 @@
 
 @helper Post(EFA_DEMO.Models.PostView postView, EFA_DEMO.Models.UserView user)
 {
+    bool editMode = postView.Id == (int)Session["EditingPostId"];
+    var Url = new System.Web.Mvc.UrlHelper(HttpContext.Current.Request.RequestContext);
     <div class="post">
         <div class="postHeader">
-            @postView.CreationDate.ToLongDateString() - @postView.CreationDate.ToShortTimeString()
-            @Helper.AvatarUser(postView.User)
-        </div>
-        <div class="postTitle">
-            <div class="title">
-                @postView.Title
-            </div>
-            @if (postView.UserId == user.Id || user.Admin)
+            @Helper.Poster(postView.User, postView.CreationDate)
+
+            @if (!editMode && (postView.UserId == user.Id || user.Admin))
             {
-                @Helper.GlyphiconAction("Repost/" + postView.Id, "glyphicon-circle-arrow-up", "Re poster " + postView.Title)
-                @Helper.GlyphiconAction("Edit/" + postView.Id, "glyphicon-edit", "Modifier " + postView.Title)
-                @Helper.GlyphiconAction("ConfirmDelete/" + postView.Id, "glyphicon-remove-circle", "Effacer " + postView.Title)
+                <div> &nbsp; </div>
+                <div class="waitCmd">
+                    @Helper.GlyphiconAjaxAction("SetEditMode/" + postView.Id, "glyphicon-edit", "Modifier " + postView.Title)
+                </div>
+                @Helper.GlyphiconConfirmAction("Delete/" + postView.Id, "glyphicon-remove-circle", "Effacer " + postView.Title)
+            }
+            else
+            {
+                <div> &nbsp; </div> <div> &nbsp; </div> <div> &nbsp; </div>
+            }
+            @if (!editMode)
+            {
+                @Helper.GlyphiconAjaxAction("CreatePost/" + postView.Id, "glyphicon-comment", "Commenter...")
+                <div>
+                    <div style="text-align:right">
+                        @if (postView.LikeCount >= 1)
+                        {
+                            <div class="likesCount" postId="@postView.Id" postTitle="@postView.Title">
+                                @postView.LikeCount &nbsp;
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="likesCount">0&nbsp;</div>
+                        }
+                    </div>
+                </div>
+                <div class="waitCmd">
+                    @if (postView.CurrentUserLike)
+                    {
+                        @Helper.GlyphiconAjaxAction("RemoveLike/" + postView.Id, "glyphicon-thumbs-up", "Vous n'aimez plus...")
+                    }
+                    else
+                    {
+                        @Helper.GlyphiconAjaxAction("AddLike/" + postView.Id, "glyphicon-thumbs-up", "Vous aimez ...")
+                    }
+                </div>
+            }
+            else
+            {
+                <div> &nbsp; </div> <div> &nbsp; </div> <div> &nbsp; </div>
             }
         </div>
-        <div class="postContent">@Helper.ParseContent(postView.Content)</div>
-        <div class="tags">
-            @Helper.Tags(postView.Tags)
+        <div class="postTitle">
+            @if (!editMode)
+            {
+                <div class="title">
+                    @postView.Title
+                </div>
+            }
+            else
+            {
+                <input type="hidden" id="postId" value="@postView.Id" />
+
+                <div>
+                    <input id="Title" value=" @postView.Title" placeholder="Titre" class="form-control" />
+                </div>
+            }
         </div>
+        @if (!editMode)
+        {
+            <div class="postContent">@Helper.ParseContent(postView.Content)</div>
+        }
+        else
+        {
+            <div class="postContentEdit">
+                <br />
+                <textarea id="Content" class="form-control replyContent" style="width:100%" postId="@postView.Id" placeholder="Contenu" required>@postView.Content</textarea>
+            </div>
+        }
+        @if (!editMode)
+        {
+            <div class="tags">
+                <div style="font-size:16px;">@Helper.Tags(postView.Tags)</div>
+            </div>
+        }
+        else
+        {
+            <br>
+            <div>
+                <input id="Tags" value=" @postView.Tags" placeholder="Étiquettes" class="form-control" />
+            </div>
+            <br />
+            <div class="waitCmd">
+                <button id="SubmitPostView" class="btn btn-primary">Soumettre</button>
+                &nbsp;
+                <button id="CancelEdit" class="btn btn-default">Annuler</button>
+            </div>
+        }
+
+        @if (postView.PostsChilds != null)
+        {
+            if (postView.PostsChilds.Count > 0)
+            {
+                <div class="postChild">
+                    @foreach (EFA_DEMO.Models.PostsChild postchild in postView.PostsChilds)
+                    {
+                        EFA_DEMO.Models.PostView childPostview = new EFA_DEMO.Models.PostView();
+                        childPostview.Copy(postchild.PostChild);
+                        @Helper.PostComment(childPostview, user, postView.User);
+                    }
+                </div>
+            }
+        }
+    </div>
+}
+@helper UserOfTargetPost(EFA_DEMO.Models.UserView user)
+{
+    string tagertUser = "@" + user.FullName + ", ";
+    var Url = new System.Web.Mvc.UrlHelper(HttpContext.Current.Request.RequestContext);
+    string targetUrl = @Url.Action("SetRootUserPosts/") + user.Id;
+    <span class="targetUser"><a href="@targetUrl">@tagertUser</a></span>
+}
+
+@helper PostComment(EFA_DEMO.Models.PostView postView, EFA_DEMO.Models.UserView user, EFA_DEMO.Models.UserView parentUser)
+{
+    var Url = new System.Web.Mvc.UrlHelper(HttpContext.Current.Request.RequestContext);
+    bool editMode = postView.Id == (int)Session["EditingPostId"];
+    <div class="post comment">
+        <div class="postHeader">
+            @Helper.Poster(postView.User, postView.CreationDate)
+
+            @if (!editMode && (postView.UserId == user.Id || user.Admin))
+            {
+                <div> &nbsp; </div>
+                <div class="waitCmd">
+                    @Helper.GlyphiconAjaxAction("SetEditMode/" + postView.Id, "glyphicon-edit", "Modifier " + postView.Title)
+                </div>
+                @Helper.GlyphiconConfirmAction("Delete/" + postView.Id, "glyphicon-remove-circle", "Effacer " + postView.Title)
+            }
+            else
+            {
+                <div> &nbsp; </div> <div> &nbsp; </div> <div> &nbsp; </div>
+            }
+            @if (!editMode)
+            {
+                @Helper.GlyphiconAjaxAction("CreatePost/" + postView.Id, "glyphicon-comment", "Commenter...")
+                <div>
+                    <div style="text-align:right">
+                        @if (postView.LikeCount >= 1)
+                        {
+                            <div class="likesCount" postId="@postView.Id" postTitle="@postView.Title">
+                                @postView.LikeCount &nbsp;
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="likesCount">0&nbsp;</div>
+                        }
+                    </div>
+                </div>
+                <div class="waitCmd">
+                    @Helper.GlyphiconAjaxAction("AddLike/" + postView.Id, "glyphicon-thumbs-up", "ajouter/enlever...")
+                </div>
+            }
+            else
+            {
+                <div> &nbsp; </div> <div> &nbsp; </div>
+            }
+        </div>
+
+        @if (!editMode)
+        {
+            <div class="postContent">@UserOfTargetPost(parentUser)@Helper.ParseContent(postView.Content)</div>
+        }
+        else
+        {
+            <div class="postContentEdit">
+                @UserOfTargetPost(parentUser) <br />
+                <input type="hidden" id="postId" value="@postView.Id" />
+                <textarea class="form-control replyContent"
+                          id="replyContent"
+                          style="width:100%"
+                          required>@postView.Content</textarea>
+                <br>
+                <div class="waitCmd">
+                    <button id="SubmitPostViewReplyContent" class="btn btn-primary">Soumettre</button>
+                    &nbsp;
+                    <button id="CancelEdit" class="btn btn-default">Annuler</button>
+                </div>
+            </div>
+        }
+        @if (postView.PostsChilds != null)
+        {
+            if (postView.PostsChilds.Count > 0)
+            {
+                <div class="postChild">
+
+                    @foreach (EFA_DEMO.Models.PostsChild postchild in postView.PostsChilds)
+                    {
+                        EFA_DEMO.Models.PostView childPostview = new EFA_DEMO.Models.PostView();
+                        childPostview.Copy(postchild.PostChild);
+                        @Helper.PostComment(childPostview, user, postView.User);
+                    }
+                </div>
+            }
+        }
     </div>
 }

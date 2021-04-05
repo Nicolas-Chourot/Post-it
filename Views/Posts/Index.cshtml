@@ -3,25 +3,185 @@
 }
 
 <br />
-@if ((string)Session["Tags"] != "")
-{
-    <h2>Recherche par étiquettes</h2>
-    string[] tags = ((string)Session["Tags"]).Split(' ');
-    foreach (var tag in tags)
-    {
-        <span class="tag">#@tag &nbsp;</span>
-    }
-    @Helper.GlyphiconAction("ClearTag/", "glyphicon-remove-circle", "Effacer ")
-    <hr />
-}
+
 <div class="postsContainer" id="postsContainer">
     @{ Html.RenderAction("Posts"); }
 </div>
 
-@section Scripts {
-    @Scripts.Render("~/bundles/partialRefresh")
+<div id="dialog-confirm" title="Retrait de post...">
+    <p><span class="glyphicon glyphicon-alert" style="font-size:16px; margin-right:6px"></span> <span id="message"> Are you sure?</span></p>
+</div>
 
-    <script>
-        $(() => { PartialRefresh("@Url.Action("Posts")", "postsContainer", 5); });
-    </script>
+<div id="dialog-Likers" title="Usagers qui ont aimé ce post...">
+    <div id="likers"></div>
+</div>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryUI")
+    @Scripts.Render("~/bundles/partialRefresh")
+    @Scripts.Render("~/bundles/autoComplete")
+
+<script>
+        let confirmActionLink = "";
+    $(() => {
+            console.log("index loaded...")
+            installPartialRefresh("@Url.Action("Posts")", "postsContainer", 5, updateEventHandlers);
+            installConfirmDialog();
+            installLikersDialog();
+            updateEventHandlers();
+        });
+
+        function installConfirmDialog() {
+            $("#dialog-confirm").hide();
+            $("#dialog-confirm").dialog({
+                autoOpen: false,
+                resizable: false,
+                height: "auto",
+                width: 400,
+                modal: true,
+                buttons: {
+                    "Effacer": function () {
+                        ajaxActionCall(confirmActionLink);
+                        $(this).dialog("close");
+                    },
+                    "Annuler": function () {
+                        $(this).dialog("close");
+                    }
+                }
+            });
+        }
+
+        function installLikersDialog() {
+            $("#dialog-Likers").hide();
+            $("#dialog-Likers").dialog({
+                autoOpen: false,
+                resizable: true,
+                height: "auto",
+                width: 400,
+                height: 400,
+                minHeight: 200,
+                minWidth:200,
+                modal: true
+            });
+        }
+
+        function installSearchTagsAutoComplete() {
+            $.ajax({
+                url: "@Url.Action("GetAllTags", "Posts")",
+                type: "GET"
+            }).done(data => { InstallAutoComplete("searchTags", data); });
+        }
+
+        function confirm(message, actionLink) {
+            confirmActionLink = actionLink;
+            $("#message").html("<b>" + message + "</b>?");
+            $("#dialog-confirm").dialog("open");
+        }
+
+        function ajaxActionCall(actionLink) {
+            console.log("Ajax Action Call to: " + actionLink);
+            $.ajax({
+                url: actionLink,
+                method: 'GET',
+                success: (data) => {
+                    console.log("Result: " + data);
+                    DoPartialRefresh("@Url.Action("Posts")", "postsContainer", updateEventHandlers);
+                }
+            });
+            confirmActionLink = "";
+        }
+        function updateViewUserPostClickHandler() {
+            $(".viewUserPosts").click((e) => {
+                let userId = $(e.target).attr("userid");
+                console.log(userId)
+                let url = "@Url.Action("SetFollowedUser/")" + userId;
+                ajaxActionCall(url);
+            });
+        }
+    function updateEventHandlers() {
+        updateViewUserPostClickHandler();
+        installSearchTagsAutoComplete();
+        $("#searchCmd").click(() => {
+            let linkCmd = "@Url.Action("SetTags")" + "?tags=" + $("#searchTags").val();
+            ajaxActionCall(linkCmd);
+        })
+        $(".waitCmd").click((e) => {
+            $(e.target.parentElement).html("<img src='@Url.Content("~/content/waiting.gif")' class='waitingGif' />");
+        });
+
+        $("#FollowedId").change((e) => {
+            let url = "@Url.Action("SetFollowedUser/")" + $("#FollowedId").val();
+            ajaxActionCall(url);
+        });
+
+        $(".likesCount").click((e) => {
+            console.log(e.target);
+            let postId = $(e.target).attr("postid");
+            $("#dialog-Likers").dialog('option', 'title', "Ceux qui ont aimé " + $(e.target).attr("posttitle"));
+            $("#dialog-Likers").dialog("open");
+            let url = "@Url.Action("GetLikersList/")" + postId;
+            $.ajax({
+                url: url,
+                dataType: "html",
+                success: function (htmlContent) {
+                    if (htmlContent !== "") {
+                        $("#likers").html(htmlContent);
+                        updateViewUserPostClickHandler();
+                    }
+                }
+            });
+        });
+        $("#SubmitPostView").click((e) => {
+            let postId = $("#postId").val();
+            let title = $("#Title").val();
+            let content = $("#Content").val();
+            let tags = $("#Tags").val();
+            console.log("SubmitPostView PostId=" + postId + " Title=" + title);
+            $.ajax({
+                url: "@Url.Action("SetPost")",
+                type: "POST",
+                data: {
+                    title: title,
+                    content: content,
+                    tags: tags,
+                    postId: postId
+                }
+            });
+        });
+        $("#SubmitPostViewReplyContent").click((e) => {
+            let postId = $("#postId").val();
+            let replyContent = $("#replyContent").val();
+            console.log("Set reply content:" + replyContent);
+            $.ajax({
+                url: "@Url.Action("SetReplyContent")",
+                type: "POST",
+                data: { content: replyContent, postId: postId}
+            });
+        });
+        $("#CancelEdit").click((e) => {
+            console.log("Cancel Edit");
+            $.ajax({
+                url: "@Url.Action("CancelEditMode")",
+                type: "GET"
+            });
+        });
+
+        let tags = $("#Tags");
+        if (tags != null) {
+            $.ajax({
+                url: "@Url.Action("GetAllTags", "Posts")",
+                type: "GET"
+            }).done(data => {
+                InstallAutoComplete("Tags", data);
+            });
+        }
+        let title = $("#Title");
+        if (title != null)
+            $("#Title").focus();
+
+        let replyContent = $("#replyContent");
+        if (replyContent != null)
+            $("#replyContent").focus();
+    }
+</script>
 }

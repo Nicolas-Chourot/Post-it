@@ -25,12 +25,10 @@ namespace EFA_DEMO.Models
             throw new UnintentionalCodeFirstException();
         }
     
+        public virtual DbSet<Like> Likes { get; set; }
         public virtual DbSet<Log> Logs { get; set; }
-        public virtual DbSet<User> Users { get; set; }
         public virtual DbSet<Post> Posts { get; set; }
-
-        public System.Data.Entity.DbSet<EFA_DEMO.Models.PostView> PostViews { get; set; }
-
-        public System.Data.Entity.DbSet<EFA_DEMO.Models.UserView> UserViews { get; set; }
+        public virtual DbSet<User> Users { get; set; }
+        public virtual DbSet<PostsChild> PostsChilds { get; set; }
     }
 }

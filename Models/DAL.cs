@@ -47,7 +47,10 @@ namespace EFA_DEMO.Models
                 Tags = post.Tags,
                 UserId = post.UserId,
                 CreationDate = post.CreationDate,
-                User = (post.User != null ? post.User.ToUserView() : null)
+                User = (post.User != null ? post.User.ToUserView() : null),
+                LikeCount = post.LikeCount,
+                ParentPostId = post.ParentPostId,
+                PostsChilds = post.PostsChilds
             };
         }
 
@@ -58,7 +61,7 @@ namespace EFA_DEMO.Models
 
             foreach (var post in DB.Posts.ToList())
             {
-                if (post.Tags != null)
+                if (post.Tags != null && post.ParentPostId == 0)
                 {
                     bool containsAllTags = true;
                     foreach (var tag in tagArray)
@@ -76,12 +79,16 @@ namespace EFA_DEMO.Models
 
             return posts;
         }
-        public static List<PostView> ToPostViewList(this IEnumerable<Post> posts)
+
+        public static List<PostView> ToPostViewList(this DBEntities DB, IEnumerable<Post> posts)
         {
+
             List<PostView> postViews = new List<PostView>();
             foreach (var post in posts)
             {
-                postViews.Add(post.ToPostView());
+                PostView postview = post.ToPostView();
+                postview.CurrentUserLike = DB.AlreadyLike(post.Id, OnlineUsers.CurrentUser.Id);
+                postViews.Add(postview);
             }
             return postViews;
         }
@@ -140,8 +147,15 @@ namespace EFA_DEMO.Models
         public static PostView AddPost(this DBEntities DB, PostView postView)
         {
             Post post = postView.ToPost();
+
             post = DB.Posts.Add(post);
             DB.SaveChanges();
+            if (post.ParentPostId != 0)
+            {
+                PostsChild pc = new PostsChild { PostId = post.ParentPostId, ChildPostId = post.Id };
+                DB.PostsChilds.Add(pc);
+                DB.SaveChanges();
+            }
             PostsLastUpdate = DateTime.Now;
             return post.ToPostView();
         }
@@ -157,19 +171,144 @@ namespace EFA_DEMO.Models
         public static bool RePost(this DBEntities DB, int id)
         {
             Post postToUpdate = DB.Posts.Find(id);
-            postToUpdate.CreationDate = DateTime.Now;
-            DB.Entry(postToUpdate).State = EntityState.Modified;
-            DB.SaveChanges();
-            PostsLastUpdate = DateTime.Now;
-            return true;
+            if (postToUpdate.ParentPostId == 0)
+            {
+                postToUpdate.CreationDate = DateTime.Now;
+                DB.Entry(postToUpdate).State = EntityState.Modified;
+                DB.SaveChanges();
+                PostsLastUpdate = DateTime.Now;
+                return true;
+            }
+            return false;
+        }
+
+
+        public static void RemoveChilds(this DBEntities DB, int postId)
+        {
+            var childs = DB.PostsChilds.Where(pc => pc.PostId == postId);
+
+            if (childs != null)
+                foreach (PostsChild child in childs)
+                {
+                    DB.RemoveChilds(child.PostId);
+                    Post post = DB.Posts.Find(child.PostId);
+                    DB.PostsChilds.Remove(child);
+                    if (post != null)
+                        DB.Posts.Remove(post);
+                }
         }
         public static bool RemovePost(this DBEntities DB, int Id)
         {
             Post postToDelete = DB.Posts.Find(Id);
-            DB.Posts.Remove(postToDelete);
-            DB.SaveChanges();
-            PostsLastUpdate = DateTime.Now;
-            return true;
+            if (postToDelete != null)
+            {
+                var childs = DB.PostsChilds.Where(pc => pc.PostId == Id).ToArray();
+
+                if (childs != null)
+                {
+                    for (int i = 0; i < childs.Count(); i++)
+                    {
+                        DB.RemovePost(childs[i].ChildPostId);
+                    }
+                }
+                PostsChild childpostToDelete = DB.PostsChilds.Where(pc => pc.ChildPostId == Id).FirstOrDefault();
+                if (childpostToDelete != null)
+                    DB.PostsChilds.Remove(childpostToDelete);
+                DB.Posts.Remove(postToDelete);
+                DB.SaveChanges();
+                PostsLastUpdate = DateTime.Now;
+                return true;
+            }
+            return false;
+        }
+        public static List<string> PostParents(this DBEntities DB, int postId)
+        {
+            List<string> parents = new List<string>();
+            Post post = DB.Posts.Find(postId);
+            do
+            {
+                if (post != null)
+                {
+                    parents.Insert(0, post.Title + "_" + post.Id);
+                    Post parent = DB.Posts.Find(post.ParentPostId);
+                }
+            }
+            while (post != null);
+            return parents;
+        }
+
+        public static bool AlreadyLike(this DBEntities DB, int postId, int userId)
+        {
+            Like like = DB.Likes.Where(l => (l.UserId == userId) && (l.PostId == postId)).FirstOrDefault();
+            return (like != null);
+        }
+        public static void AddLikes(this DBEntities DB, int postId, int userId)
+        {
+            Post post = DB.Posts.Find(postId);
+            if (post != null)
+            {
+                User user = DB.Users.Find(userId);
+                if (user != null)
+                {
+                    Like like = DB.Likes.Where(l => (l.UserId == userId) && (l.PostId == postId)).FirstOrDefault();
+                    if (like == null)
+                    {
+                        like = new Like { UserId = userId, PostId = postId };
+                        DB.Likes.Add(like);
+                        post.LikeCount++;
+                        DB.Entry(post).State = EntityState.Modified;
+                        DB.SaveChanges();
+                        PostsLastUpdate = DateTime.Now;
+                    }
+                    else
+                    {
+                        DB.Likes.Remove(like);
+                        post.LikeCount--;
+                        if (post.LikeCount < 0) post.LikeCount = 0;
+                        DB.Entry(post).State = EntityState.Modified;
+                        DB.SaveChanges();
+                        PostsLastUpdate = DateTime.Now;
+                    }
+                }
+            }
+        }
+        public static void RemoveLikes(this DBEntities DB, int postId, int userId)
+        {
+            Post post = DB.Posts.Find(postId);
+            if (post != null)
+            {
+                User user = DB.Users.Find(userId);
+                if (user != null)
+                {
+                    Like like = DB.Likes.Where(l => (l.UserId == userId) && (l.PostId == postId)).FirstOrDefault();
+                    if (like != null)
+                    {
+                        DB.Likes.Remove(like);
+                        post.LikeCount--;
+                        if (post.LikeCount < 0) post.LikeCount = 0;
+                        DB.Entry(post).State = EntityState.Modified;
+                        DB.SaveChanges();
+                        PostsLastUpdate = DateTime.Now;
+                    }
+                }
+            }
+        }
+        public static List<string> FindLikers(this DBEntities DB, int postId)
+        {
+            Post post = DB.Posts.Find(postId);
+            if (post != null)
+            {
+                List<string> likers = new List<string>();
+                var likes = DB.Likes.Where(l => l.PostId == postId);
+                foreach (Like like in likes)
+                {
+                    string name = like.User.FullName + "_" + like.User.Id;
+                    if (!likers.Contains(name))
+                        likers.Add(name);
+                }
+                return likers.OrderBy(s => s).ToList();
+            }
+            return null;
         }
 
         public static List<string> GetAllTags(this DBEntities DB)
@@ -193,5 +332,6 @@ namespace EFA_DEMO.Models
             }
             return tags.OrderBy(s => s).ToList();
         }
+
     }
 }

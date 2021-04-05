@@ -13,7 +13,7 @@
     @Scripts.Render("~/bundles/partialRefresh")
 
     <script>
-        $(() => { PartialRefresh("@Url.Action("UsersLogs")", "logsListContainer", 5); });
+        $(() => { installPartialRefresh("@Url.Action("UsersLogs")", "logsListContainer", 5); });
     </script>
 }
 

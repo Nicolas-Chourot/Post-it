@@ -7,10 +7,11 @@
 .body-content {
     padding-left: 10px;
     padding-right: 10px;
-    
 }
+
 body {
-    background-color: green;
+    background-color: black;
+    color:#e7e7e7;
 }
 /* Override the default bootstrap behavior where horizontal description lists 
    will truncate terms that are too long to fit in the left column 
@@ -24,6 +25,19 @@ input,
 select,
 textarea {
     max-width: 370px;
+    background-color: #2d2d2d;
+    color: #e7e7e7;
+}
+
+
+.replyContent {
+    max-width: none !important;
+    width: 95%;
+    margin-right:8px !important;
+}
+
+.postContentEdit{
+    padding-right:8px;
 }
 
 .avatar {
@@ -33,83 +47,134 @@ textarea {
 }
 
 .smallAvatar {
-    margin-top:-6px;
-    margin-right:4px;
+    margin-top: -6px;
+    margin-right: 4px;
     width: 36px;
     height: 36px;
     border-radius: 18px;
     float: left;
 }
 
+.mediumAvatar {
+
+    margin-right: 8px;
+    width: 40px;
+    height: 40px;
+    border-radius: 20px;
+    float: left;
+}
+
+.smallGlyphicon {
+    transform: scale(0.6);
+    margin-top: -3px;
+}
+
+.nameDate {
+    font-size: 14px;
+    margin: 0px;
+}
+
+
+
 .menuTitle {
-
 }
 
-.menuTitle:hover {
-    color: white;
-}
+    .menuTitle:hover {
+        color: white;
+    }
 
 .UploadedImage {
     max-width: 100%;
 }
-textarea{
-    width:100% !important;
-    height:200px;
+
+textarea {
+    width: 100% !important;
+    height: 200px;
 }
 
 .applicationName {
     color: lightgreen !important;
-    font-weight:bold;
+    font-weight: bold;
 }
+
 .postContainer {
     margin: auto;
 }
 
+.postChild {
+    border: 2px solid gray;
+    margin-top: 8px;
+    border-radius: 10px !important;
+    background-color:none;
+}
+
 .post {
-    margin:auto;
+    margin: auto;
     min-width: 400px;
     max-width: 800PX;
-    width:100%;
-    border-radius:8px;
-    border:1px solid gray;
-    padding:8px;
-    margin-bottom:15px;
-    background-color:white;
+    width: 100%;
+    border-radius: 12px;
+    padding: 8px;
+    padding-right: 0px;
+    margin-bottom: 15px;
+    background-color: #2d2d2d;
+    color: #e7e7e7;
 }
-h2,h3{
-    color:lightgreen;
+.targetUser{
+
+}
+.comment {
+    background-color: none;
+    margin-bottom: -1px !important;
+    padding-bottom:-1px;
+}
+h2, h3 {
+    color: lightgreen;
+}
+a{
+    color:#6cd2ff;
 }
 .postHeader {
-    margin:-8px;
-    margin-bottom:8px;
-    height:50px;
-    padding-top:16px;
-    padding-left:6px;
-    border-radius:8px;
-    border-bottom-left-radius:0px;
-    border-bottom-right-radius:0px;
+    margin: -8px;
+    margin-bottom: 8px;
+    margin-right:8px;
+    height: 50px;
+    padding-top: 12px;
+    padding-left: 6px;
+    border-radius: 8px;
+    border-bottom-left-radius: 0px;
+    border-bottom-right-radius: 0px;
     display: grid;
     grid-gap: 5px;
-    grid-template-columns: 49% 50%;
-    background-color:lightgreen;
-    font-weight:bold;
-    font-size:larger;
-    font-family:'Arial Rounded MT';
+    grid-template-columns: 45% 50%;
+    background-color: #2d2d2d;
+    font-weight: bold;
+    font-size: larger;
+    font-family: 'Arial Rounded MT';
+    display: grid;
+    grid-gap: 2px;
+    grid-template-columns: 49% 7% 7% 7% 7% 7% 7% 7% ;
 }
+
 .postTitle {
     padding: 8px;
     margin: -8px;
+    margin-right:8px;
     border-top: 1px solid gray;
     border-bottom: 1px solid gray;
-    display: grid;
-    grid-gap: 2px;
-    grid-template-columns: 79% 7% 7% 7%;
 }
 
+.searchForm {
+    display: grid;
+    grid-gap: 2px;
+    grid-template-columns: 40px 200px 40px 40px;
+}
+
+
 .ellipsis {
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    overflow: hidden;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
 }
 
 .title {
@@ -119,36 +184,46 @@ h2,h3{
     font-size: large;
     font-weight: bold;
 }
+
 .postContent {
-    margin-top:20px;
+    margin-top: 20px;
+    margin-right:8px;
     font-size: medium;
     font-family: 'Times New Roman', Times, serif;
+    overflow: auto;
 }
 
 .tags {
-    padding:8px;
+    padding: 8px;
     margin: -8px;
-
-    margin-top:20px;
+    margin-right: 8px;
+    margin-top: 20px;
     border-top: 1px solid gray;
     color: cornflowerblue;
+    display: grid;
+    grid-gap: 5px;
+    grid-template-columns: 80% 20%;
 }
 
 .tag {
-    color:cyan;
-    font-size:1.5em;
+    color: cyan;
+    font-size: 1.5em;
+}
+
+.glyphicon {
+    font-size: 22px !important;
+    height: 24px !important;
 }
 
 .glyphiconStyle {
-    font-size: 22px !important;
     margin-right: 4px !important;
     margin-left: 4px !important;
-    color:lightgreen;
+    color: #e7e7e7;
 }
 
 .pageHeader {
-    font-size:2em;
-    font-weight:bold;
+    font-size: 2em;
+    font-weight: bold;
     margin: auto;
     width: 40%;
 }
@@ -160,6 +235,54 @@ h2,h3{
     overflow: auto;
 }
 
-.contentImage{
-    width:100%;
+.contentImage {
+    width: 100%;
 }
+
+.ui-icon {
+    transform: scale(1.5);
+}
+
+.waitingGif {
+    height: 26px;
+}
+
+.post2 {
+    border: 1px solid cyan;
+}
+
+input[type="search"]::-webkit-search-cancel-button {
+    /* Remove default */
+    -webkit-appearance: none;
+    /* Now your own custom styles */
+    height: 14px;
+    width: 14px;
+    display: block;
+    background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAB4AAAAeCAYAAAA7MK6iAAAAn0lEQVR42u3UMQrDMBBEUZ9WfQqDmm22EaTyjRMHAlM5K+Y7lb0wnUZPIKHlnutOa+25Z4D++MRBX98MD1V/trSppLKHqj9TTBWKcoUqffbUcbBBEhTjBOV4ja4l4OIAZThEOV6jHO8ARXD+gPPvKMABinGOrnu6gTNUawrcQKNCAQ7QeTxORzle3+sDfjJpPCqhJh7GixZq4rHcc9l5A9qZ+WeBhgEuAAAAAElFTkSuQmCC);
+    /* setup all the background tweaks for our custom icon */
+    background-repeat: no-repeat;
+    /* icon size */
+    background-size: 14px;
+}
+
+.likesCount {
+    cursor: pointer;
+}
+
+    .likesCount:hover {
+        font-weight: bolder;
+        font-size: 18px;
+    }
+
+.waitCmd {
+    color: dodgerblue !important;
+}
+.viewUserPosts {
+    cursor: pointer;
+    font-size: 18px;
+}
+
+    .viewUserPosts:hover {
+        font-weight: bolder;
+        color: green;
+    }

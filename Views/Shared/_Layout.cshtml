@@ -33,7 +33,7 @@
                     @if (onlineUser != null)
                     {
                         <li>
-                            @Helper.GlyphiconControllerAction("Posts", "Create", "glyphicon-plus", "Ajouter un post...")
+                            @Helper.GlyphiconAjaxControllerAction("Posts", "CreatePost/0", "glyphicon-plus", "Ajouter un post...")
                         </li>
                         <li>
                             @Helper.GlyphiconControllerAction("Posts", "Tags", "glyphicon-tags", "Recherche par étiquettes...")
@@ -59,7 +59,7 @@
                             @Helper.GlyphiconControllerAction("Users", "Logout", "glyphicon-log-out", "Déconnexion")
                         </li>
                     }
-                   
+
                     <li>
                         @Helper.GlyphiconControllerAction("Users", "About", "glyphicon-question-sign", "À propos...")
                     </li>

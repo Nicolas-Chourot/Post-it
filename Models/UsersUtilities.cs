@@ -37,7 +37,7 @@ namespace EFA_DEMO.Models
             {
                 if (value != null)
                 {
-                    HttpContext.Current.Session.Timeout = 30;
+                    HttpContext.Current.Session.Timeout = 60;
                     HttpContext.Current.Session["User"] = value;
                 }
                 else

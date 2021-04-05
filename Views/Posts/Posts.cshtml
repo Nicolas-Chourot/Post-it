@@ -1,12 +1,54 @@
 ﻿@model IEnumerable<EFA_DEMO.Models.PostView>
+
+@if ((bool)Session["ShowSearchTags"])
+{
+    string[] tags = ((string)Session["Tags"]).Split(' ');
+    <div class="searchForm" style="float:left">
+        <span class="glyphicon glyphicon-tags glyphiconStyle"></span>
+        @{
+            string tagsString = "";
+            foreach (var tag in tags)
+            {
+                tagsString += tag + " ";
+            }
+        }
+        <input type="search" id="searchTags" class="form-control" value="@tagsString" />
+
+        <div class="waitCmd">
+            <div id="searchCmd">@Helper.GlyphiconCmd("glyphicon glyphicon-search", "Chercher")</div>
+        </div>
+        <div class="waitCmd">
+            <div>@Helper.GlyphiconAction("ClearTag/", "glyphicon-remove-circle", "Effacer ")</div>
+        </div>
+    </div>
+    <br />
+    <hr />
+}
 @if (Model.Count() > 0)
 {
+    int index = 0;
+    int maxIndex = (int)Session["PostPageCount"] * (int)Session["PostsPageSize"];
     foreach (var postView in Model)
     {
-    @Helper.Post(postView, OnlineUsers.CurrentUser)
+        @Helper.Post(postView, OnlineUsers.CurrentUser)
+        index++;
+        if (index >= maxIndex)
+        {
+            break;
+        }
+    }
+    if (index < Model.Count())
+    {
+        <div>
+            <div onclick="ajaxActionCall('@Url.Action("NextPage")')"
+                 style="color:lightgreen; cursor:pointer; font-size:large; font-weight:bold"
+                 class="waitCmd">
+                Voir plus
+            </div>
+        </div>
     }
 }
 else
 {
-    <h3>aucun post</h3>
+    <h3> aucun post </h3>
 }

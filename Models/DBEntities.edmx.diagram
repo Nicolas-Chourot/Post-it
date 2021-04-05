@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+ <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <!-- Diagram content (shape and connector positions) -->
+    <edmx:Diagrams>
+      <Diagram DiagramId="84e1642947ba4b15875ca9961012b00c" Name="Diagram1">
+        <EntityTypeShape EntityType="DBModel.Like" Width="1.5" PointX="6.625" PointY="0.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="DBModel.Log" Width="1.5" PointX="0.5" PointY="0.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="DBModel.Post" Width="1.5" PointX="4.625" PointY="1" IsExpanded="true" />
+        <EntityTypeShape EntityType="DBModel.User" Width="1.5" PointX="2.625" PointY="0.5" IsExpanded="true" />
+        <AssociationConnector Association="DBModel.FK_Likes_PostId" ManuallyRouted="false" />
+        <AssociationConnector Association="DBModel.FK_UserId" ManuallyRouted="false" />
+        <AssociationConnector Association="DBModel.FK_Creator_UserId" ManuallyRouted="false" />
+        <AssociationConnector Association="DBModel.FK_Likes_UserId" />
+        <EntityTypeShape EntityType="DBModel.PostsChild" Width="1.5" PointX="8.625" PointY="0.5" />
+        <AssociationConnector Association="DBModel.FK_PostId" />
+        <AssociationConnector Association="DBModel.FK_PostChildsPostId2" />
+      </Diagram>
+    </edmx:Diagrams>
+  </edmx:Designer>
+</edmx:Edmx>

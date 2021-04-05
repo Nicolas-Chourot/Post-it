@@ -1,0 +1,36 @@
+﻿@model IEnumerable<string>
+
+<select id="FollowedId" class="form-control">
+    @if ((int)Session["PostsSourceId"] == 0)
+    {
+        <option value="0" selected>Tous les posts</option>
+    }
+    else
+    {
+        <option value="0">Tous les posts</option>
+    }
+    @if ((int)Session["PostsSourceId"] == OnlineUsers.CurrentUser.Id)
+    {
+        <option value="@OnlineUsers.CurrentUser.Id" selected>Mes posts</option>
+    }
+    else
+    {
+        <option value="@OnlineUsers.CurrentUser.Id">Mes posts</option>
+    }
+    <option disabled>────────────────</option>
+    @foreach (string followedString in Model)
+    {
+        string[] tokens = followedString.Split('_');
+        string name = tokens[0];
+        string userId = tokens[1];
+
+        if (((int)Session["PostsSourceId"]).ToString() == userId)
+        {
+            <option value="@userId" selected>@name</option>
+        }
+        else
+        {
+            <option value="@userId">@name</option>
+        }
+    }
+</select>

@@ -19,6 +19,7 @@ namespace EFA_DEMO.Models
         {
             this.Logs = new HashSet<Log>();
             this.Posts = new HashSet<Post>();
+            this.Likes = new HashSet<Like>();
         }
     
         public int Id { get; set; }
@@ -32,5 +33,7 @@ namespace EFA_DEMO.Models
         public virtual ICollection<Log> Logs { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Post> Posts { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<Like> Likes { get; set; }
     }
 }

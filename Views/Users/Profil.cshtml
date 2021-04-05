@@ -15,7 +15,7 @@
     <hr />
     @Html.ValidationSummary(true, "", new { @class = "text-danger" })
     @Html.HiddenFor(model => model.AvatarId)
-    @Html.Hidden("PasswordChangeToken", (string)ViewBag.PasswordChangeToken)
+    @Html.Hidden("PasswordNotChangedToken", (string)ViewBag.PasswordChangeToken)
 
     <div class="form-group">
         @Html.LabelFor(model => model.UserName, htmlAttributes: new { @class = "control-label col-md-2" })
@@ -71,8 +71,8 @@
     @Scripts.Render("~/bundles/imageUploader")
     <script>
         $(function () {
-            $("#NewPassword").val($("#PasswordChangeToken").val());
-            $("#Confirmation").val($("#PasswordChangeToken").val());
+            $("#NewPassword").val($("#PasswordNotChangedToken").val());
+            $("#Confirmation").val($("#PasswordNotChangedToken").val());
         })
     </script>
 }

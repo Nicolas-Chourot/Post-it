@@ -14,13 +14,29 @@ namespace EFA_DEMO.Models
     
     public partial class Post
     {
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
+        public Post()
+        {
+            this.Likes = new HashSet<Like>();
+            this.PostsChilds = new HashSet<PostsChild>();
+            this.PostsChilds1 = new HashSet<PostsChild>();
+        }
+    
         public int Id { get; set; }
         public string Title { get; set; }
         public string Content { get; set; }
         public string Tags { get; set; }
         public System.DateTime CreationDate { get; set; }
         public int UserId { get; set; }
+        public int LikeCount { get; set; }
+        public int ParentPostId { get; set; }
     
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<Like> Likes { get; set; }
         public virtual User User { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<PostsChild> PostsChilds { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<PostsChild> PostsChilds1 { get; set; }
     }
 }

@@ -119,7 +119,7 @@ namespace EFA_DEMO.Controllers
         {
             UserView userView = OnlineUsers.CurrentUser;
 
-            ViewBag.PasswordChangeToken = Guid.NewGuid().ToString().Substring(0,8);
+            ViewBag.PasswordNotChangedToken = Guid.NewGuid().ToString().Substring(0,8);
             return View(userView);
         }
         [HttpPost]
@@ -127,8 +127,8 @@ namespace EFA_DEMO.Controllers
         {
             if (ModelState.IsValid)
             {
-                string PasswordChangeToken = (string)Request["PasswordChangeToken"];
-                if (userview.NewPassword.Equals(PasswordChangeToken))
+                string PasswordNotChangedToken = (string)Request["PasswordNotChangedToken"];
+                if (userview.NewPassword.Equals(PasswordNotChangedToken))
                 {
                     userview.Id = OnlineUsers.CurrentUser.Id;
                     userview.Admin = OnlineUsers.CurrentUser.Admin;

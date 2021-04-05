@@ -4,7 +4,16 @@
     ViewBag.Title = "Nouveau";
 }
 
-<h2>@Helper.GlyphiconAction("Index", "glyphicon-arrow-left", "Retour ")Nouveau</h2>
+@if (Session["ParentPost"] == null)
+{
+    <h2>@Helper.GlyphiconAction("Index", "glyphicon-arrow-left", "Retour ")Nouveau post</h2>
+}
+else
+{
+    var parent = ((EFA_DEMO.Models.Post)Session["ParentPost"]).ToPostView();
+    <h2>@Helper.GlyphiconAction("Index", "glyphicon-arrow-left", "Retour ")En réponse à :</h2>
+    <div class="ellipsis" style="width:95%"><h2 style="color:black">@parent.Title</h2></div>
+}
 
 @using (Html.BeginForm())
 {
