@@ -93,7 +93,7 @@ textarea {
 }
 
 .applicationName {
-    color: lightgreen !important;
+    color: #e7e7e7 !important;
     font-weight: bold;
 }
 
@@ -115,21 +115,22 @@ textarea {
     width: 100%;
     border-radius: 12px;
     padding: 8px;
-    padding-right: 0px;
+    padding-right:0px;
     margin-bottom: 15px;
+    margin-right:8px;
     background-color: #2d2d2d;
     color: #e7e7e7;
 }
 .targetUser{
-
 }
 .comment {
     background-color: none;
     margin-bottom: -1px !important;
-    padding-bottom:-1px;
+    padding-right: 8px !important;
+    min-width: 0px;
 }
 h2, h3 {
-    color: lightgreen;
+    color: #e7e7e7;
 }
 a{
     color:#6cd2ff;
@@ -199,7 +200,7 @@ a{
     margin-right: 8px;
     margin-top: 20px;
     border-top: 1px solid gray;
-    color: cornflowerblue;
+    color: dodgerblue;
     display: grid;
     grid-gap: 5px;
     grid-template-columns: 80% 20%;
@@ -284,5 +285,5 @@ input[type="search"]::-webkit-search-cancel-button {
 
     .viewUserPosts:hover {
         font-weight: bolder;
-        color: green;
+        color: dodgerblue;
     }

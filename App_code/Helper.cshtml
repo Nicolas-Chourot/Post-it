@@ -73,7 +73,7 @@
              style="background: url(@avatarUrl) no-repeat center center; background-size: cover; float:left;">
         </div>
         <div class="nameDate">
-            <div class="ellipsis">@user.FullName</div>
+            <div class="ellipsis">@Helper.UserOfTargetPost(user)</div>
             <div class="ellipsis">@Helper.When(date)</div>
         </div>
     </div>
@@ -121,7 +121,6 @@
         </span>
     </div>
 }
-
 @helper GlyphiconAjaxAction(string Action, string glyphiconClass, string TooltipMessage, string ToolTipPlacement = "bottom")
 {
     var Url = new System.Web.Mvc.UrlHelper(HttpContext.Current.Request.RequestContext);
@@ -132,7 +131,6 @@
         </span>
     </div>
 }
-
 @helper GlyphiconAjaxControllerAction(string controller, string Action, string glyphiconClass, string TooltipMessage, string ToolTipPlacement = "bottom")
 {
     var Url = new System.Web.Mvc.UrlHelper(HttpContext.Current.Request.RequestContext);
@@ -145,7 +143,6 @@
         </div>
     </div>
 }
-
 @helper GlyphiconControllerAction(string controller, string Action, string glyphiconClass, string TooltipMessage, string ToolTipPlacement = "bottom")
 {
     var Url = new System.Web.Mvc.UrlHelper(HttpContext.Current.Request.RequestContext);
@@ -352,12 +349,21 @@
         }
     </div>
 }
-@helper UserOfTargetPost(EFA_DEMO.Models.UserView user)
+
+@helper UserOfTargetPost(EFA_DEMO.Models.UserView user = null)
 {
-    string tagertUser = "@" + user.FullName + ", ";
     var Url = new System.Web.Mvc.UrlHelper(HttpContext.Current.Request.RequestContext);
-    string targetUrl = @Url.Action("SetRootUserPosts/") + user.Id;
-    <span class="targetUser"><a href="@targetUrl">@tagertUser</a></span>
+    if (user != null)
+    {
+        string targetUser = "@" + user.FullName + " ";
+        string targetUrl = @Url.Action("SetRootUserPosts/") + user.Id;
+        <span class="targetUser"><a href="@targetUrl">@targetUser</a></span>
+    }
+    else
+    {
+        string targetUrl = @Url.Action("SetRootUserPosts/0");
+        <span class="targetUser"><a href=" @Url.Action("SetRootUserPosts/0")" class="glyphicon glyphicon-arrow-left glyphiconStyle"></a></span>
+    }
 }
 
 @helper PostComment(EFA_DEMO.Models.PostView postView, EFA_DEMO.Models.UserView user, EFA_DEMO.Models.UserView parentUser)
@@ -409,7 +415,7 @@
 
         @if (!editMode)
         {
-            <div class="postContent">@UserOfTargetPost(parentUser)@Helper.ParseContent(postView.Content)</div>
+            <div class="postContent">@UserOfTargetPost(parentUser), @Helper.ParseContent(postView.Content)</div>
         }
         else
         {

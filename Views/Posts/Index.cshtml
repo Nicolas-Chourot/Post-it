@@ -21,11 +21,12 @@
     @Scripts.Render("~/bundles/partialRefresh")
     @Scripts.Render("~/bundles/autoComplete")
 
-<script>
+    <script>
         let confirmActionLink = "";
-    $(() => {
+        $(() => {
             console.log("index loaded...")
             installPartialRefresh("@Url.Action("Posts")", "postsContainer", 5, updateEventHandlers);
+            installPartialRefresh("@Url.Action("ForceRefresh")", "postsContainer", 60, updateEventHandlers);
             installConfirmDialog();
             installLikersDialog();
             updateEventHandlers();
@@ -183,5 +184,5 @@
         if (replyContent != null)
             $("#replyContent").focus();
     }
-</script>
+    </script>
 }

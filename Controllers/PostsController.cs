@@ -33,8 +33,7 @@ namespace EFA_DEMO.Controllers
         {
             if (Session["HoldPartialRefresh"] == null) Session["HoldPartialRefresh"] = false;
             if (Session["EditingPostId"] == null) Session["EditingPostId"] = 0;
-            if (Session["ParentPostId"] == null) Session["ParentPostId"] = 0;
-            if (Session["PostsSourceId"] == null) Session["PostsSourceId"] = 0;
+            if (Session["PostsSourceUser"] == null) Session["PostsSourceUser"] = null;
             if (Session["ShowSearchTags"] == null) Session["ShowSearchTags"] = false;
             if (Session["PostsPageSize"] == null) Session["PostsPageSize"] = 5;
             if (Session["PostPageCount"] == null) Session["PostPageCount"] = 1;
@@ -45,26 +44,26 @@ namespace EFA_DEMO.Controllers
             return View();
         }
 
+        public ActionResult ForceRefresh()
+        {
+            RefreshPostsLastRequest = new DateTime(0);
+            return null;
+        }
+
         public ActionResult Posts()
         {
-            if (DAL.PostsNeedUpdate(RefreshPostsLastRequest) &&(!(bool)Session["HoldPartialRefresh"]))
+            if (DAL.PostsNeedUpdate(RefreshPostsLastRequest) && (!(bool)Session["HoldPartialRefresh"]))
             {
                 Session["HoldPartialRefresh"] = (int)Session["EditingPostId"] != 0;
                 RefreshPostsLastRequest = DateTime.Now;
                 var posts = ((string)Session["Tags"] == "" ?
                             db.Posts.Where(p => p.ParentPostId == 0).ToList() :
                             db.SearchPostsByTags((string)Session["Tags"]));
-                int sourceId = (int)Session["PostsSourceId"];
-                if (sourceId != 0)
+
+                if (Session["PostsSourceUser"] != null)
                 {
-                    User user = db.Users.Find(sourceId);
-                    if (user != null)
-                    {
-                        Session["PostsSourceName"] = user.FullName;
-                        return PartialView(db.ToPostViewList(posts.Where(p => p.UserId == sourceId).OrderByDescending(p => p.CreationDate)));
-                    }
-                    else
-                        return PartialView(db.ToPostViewList(posts.OrderByDescending(p => p.CreationDate)));
+                    int sourceId = ((UserView)Session["PostsSourceUser"]).Id;
+                    return PartialView(db.ToPostViewList(posts.Where(p => p.UserId == sourceId).OrderByDescending(p => p.CreationDate)));
                 }
                 else
                 {
@@ -268,6 +267,19 @@ namespace EFA_DEMO.Controllers
             }
             return null;
         }
+        public ActionResult SetRootUserPosts(int id/*target userId*/)
+        {
+            User user = db.Users.Find(id);
+            if (user != null)
+            {
+                Session["PostsSourceUser"] = user.ToUserView();
+            }
+            else
+            {
+                Session["PostsSourceUser"] = null;
+            }
+            return RedirectToAction("Index");
+        }
         public ActionResult ClearTag()
         {
             Session["ShowSearchTags"] = false;
@@ -297,7 +309,7 @@ namespace EFA_DEMO.Controllers
 
         public ActionResult GetLikersList(int id /*post id*/)
         {
-            List<string> likers = db.FindLikers(id);
+            List<UserView> likers = db.FindLikers(id);
             return PartialView(likers);
         }
 

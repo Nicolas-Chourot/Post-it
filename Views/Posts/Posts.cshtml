@@ -1,5 +1,14 @@
 ﻿@model IEnumerable<EFA_DEMO.Models.PostView>
 
+@if (Session["PostsSourceUser"] != null)
+{
+    EFA_DEMO.Models.UserView user = (EFA_DEMO.Models.UserView)Session["PostsSourceUser"];
+    <br />
+    @Helper.UserOfTargetPost()
+    <h3>@user.FullName</h3>;
+    <hr />
+}
+
 @if ((bool)Session["ShowSearchTags"])
 {
     string[] tags = ((string)Session["Tags"]).Split(' ');

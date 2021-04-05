@@ -293,20 +293,18 @@ namespace EFA_DEMO.Models
                 }
             }
         }
-        public static List<string> FindLikers(this DBEntities DB, int postId)
+        public static List<UserView> FindLikers(this DBEntities DB, int postId)
         {
             Post post = DB.Posts.Find(postId);
             if (post != null)
             {
-                List<string> likers = new List<string>();
+                List<UserView> likers = new List<UserView>();
                 var likes = DB.Likes.Where(l => l.PostId == postId);
                 foreach (Like like in likes)
                 {
-                    string name = like.User.FullName + "_" + like.User.Id;
-                    if (!likers.Contains(name))
-                        likers.Add(name);
+                    likers.Add(like.User.ToUserView());
                 }
-                return likers.OrderBy(s => s).ToList();
+                return likers.OrderBy(l => l.FullName).ToList();
             }
             return null;
         }

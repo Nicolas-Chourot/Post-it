@@ -1,8 +1,5 @@
-﻿@model IEnumerable<string>
+﻿@model IEnumerable<EFA_DEMO.Models.UserView>
 @foreach(var liker in Model)
 {
-    string[] tokens = liker.Split('_');
-    string name = tokens[0];
-    string userId = tokens[1];
-    <div class="viewUserPosts" title="Voir ses posts..." userId="@userId">@name</div>
+   @Helper.UserOfTargetPost(liker) <br />
 }
