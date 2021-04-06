@@ -1,0 +1,45 @@
+﻿CREATE TABLE [dbo].[Posts] (
+    [Id]           INT            IDENTITY (1, 1) NOT NULL,
+    [Title]        NVARCHAR (MAX) NOT NULL,
+    [Content]      NVARCHAR (MAX) NOT NULL,
+    [Tags]         NVARCHAR (MAX) NULL,
+    [CreationDate] DATETIME       NOT NULL,
+    [UserId]       INT            NOT NULL,
+    [LikeCount]    INT            DEFAULT ((0)) NOT NULL,
+    [ParentPostId] INT            DEFAULT ((0)) NOT NULL,
+    PRIMARY KEY CLUSTERED ([Id] ASC),
+    CONSTRAINT [FK_Creator_UserId] FOREIGN KEY ([UserId]) REFERENCES [dbo].[Users] ([Id]) ON DELETE CASCADE
+);
+CREATE TABLE [dbo].[Likes] (
+    [Id]     INT IDENTITY (1, 1) NOT NULL,
+    [PostId] INT NOT NULL,
+    [UserId] INT NOT NULL,
+    PRIMARY KEY CLUSTERED ([Id] ASC),
+    CONSTRAINT [FK_Likes_PostId] FOREIGN KEY ([PostId]) REFERENCES [dbo].[Posts] ([Id]) ON DELETE CASCADE,
+    CONSTRAINT [FK_Likes_UserId] FOREIGN KEY ([UserId]) REFERENCES [dbo].[Users] ([Id])
+);
+CREATE TABLE [dbo].[PostsChilds] (
+    [Id]          INT IDENTITY (1, 1) NOT NULL,
+    [PostId]      INT NOT NULL,
+    [ChildPostId] INT NOT NULL,
+    PRIMARY KEY CLUSTERED ([Id] ASC),
+    CONSTRAINT [FK_PostChildsPostId] FOREIGN KEY ([ChildPostId]) REFERENCES [dbo].[Posts] ([Id]) ON DELETE CASCADE,
+    FOREIGN KEY ([PostId]) REFERENCES [dbo].[Posts] ([Id])
+);
+CREATE TABLE [dbo].[Users] (
+    [Id]       INT            IDENTITY (1, 1) NOT NULL,
+    [AvatarId] NVARCHAR (68)  NULL,
+    [UserName] NVARCHAR (50)  NOT NULL,
+    [FullName] NVARCHAR (100) NOT NULL,
+    [Password] NVARCHAR (50)  NOT NULL,
+    [Admin]    BIT            NOT NULL,
+    PRIMARY KEY CLUSTERED ([Id] ASC)
+);
+CREATE TABLE [dbo].[Logs] (
+    [Id]        INT      IDENTITY (1, 1) NOT NULL,
+    [UserId]    INT      NOT NULL,
+    [LoginDate] DATETIME NOT NULL,
+    PRIMARY KEY CLUSTERED ([Id] ASC),
+    CONSTRAINT [FK_UserId] FOREIGN KEY ([UserId]) REFERENCES [dbo].[Users] ([Id]) ON DELETE CASCADE
+);
+

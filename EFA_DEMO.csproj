@@ -184,6 +184,7 @@
       <DependentUpon>DB.mdf</DependentUpon>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="App_Data\Tables SQL Definitions.txt" />
     <Content Include="Avatars\Loading_icon.gif" />
     <Content Include="Avatars\no_avatar.png" />
     <Content Include="Content\bootstrap-theme.css" />

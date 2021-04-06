@@ -350,19 +350,19 @@
     </div>
 }
 
-@helper UserOfTargetPost(EFA_DEMO.Models.UserView user = null)
+@helper UserOfTargetPost(EFA_DEMO.Models.UserView user = null, string prefix = "")
 {
     var Url = new System.Web.Mvc.UrlHelper(HttpContext.Current.Request.RequestContext);
     if (user != null)
     {
-        string targetUser = "@" + user.FullName + " ";
-        string targetUrl = @Url.Action("SetRootUserPosts/") + user.Id;
+        string targetUser = prefix +  user.FullName.Trim() ;
+        string targetUrl = Url.Action("SetRootUserPosts/") + user.Id;
         <span class="targetUser"><a href="@targetUrl">@targetUser</a></span>
     }
     else
     {
-        string targetUrl = @Url.Action("SetRootUserPosts/0");
-        <span class="targetUser"><a href=" @Url.Action("SetRootUserPosts/0")" class="glyphicon glyphicon-arrow-left glyphiconStyle"></a></span>
+        string targetUrl = Url.Action("SetRootUserPosts/0");
+        <span class="targetUser"><a href="@Url.Action("SetRootUserPosts/0")" class="glyphicon glyphicon-arrow-left glyphiconStyle"></a></span>
     }
 }
 
@@ -415,7 +415,7 @@
 
         @if (!editMode)
         {
-            <div class="postContent">@UserOfTargetPost(parentUser), @Helper.ParseContent(postView.Content)</div>
+            <div class="postContent">@UserOfTargetPost(parentUser, "@") @Helper.ParseContent(postView.Content)</div>
         }
         else
         {
