@@ -21,7 +21,7 @@
     @Scripts.Render("~/bundles/partialRefresh")
     @Scripts.Render("~/bundles/autoComplete")
 
-    <script>
+<script>
         let confirmActionLink = "";
         $(() => {
             console.log("index loaded...")
@@ -149,7 +149,20 @@
                 }
             });
         });
-        $("#SubmitPostViewReplyContent").click((e) => {
+
+        $("#CommentForm").submit((e) => {
+            let postId = $("#postId").val();
+            let replyContent = $("#replyContent").val();
+            console.log("Set reply content:" + replyContent);
+            $.ajax({
+                url: "@Url.Action("SetReplyContent")",
+                type: "POST",
+                data: { content: replyContent, postId: postId}
+            });
+            e.preventDefault();
+        });
+
+         $("#SubmitPostViewReplyContent").click((e) => {
             let postId = $("#postId").val();
             let replyContent = $("#replyContent").val();
             console.log("Set reply content:" + replyContent);
@@ -159,6 +172,7 @@
                 data: { content: replyContent, postId: postId}
             });
         });
+
         $("#CancelEdit").click((e) => {
             console.log("Cancel Edit");
             $.ajax({
@@ -184,5 +198,5 @@
         if (replyContent != null)
             $("#replyContent").focus();
     }
-    </script>
+</script>
 }

@@ -127,18 +127,14 @@ namespace EFA_DEMO.Controllers
         {
             if (ModelState.IsValid)
             {
+                userview.Id = OnlineUsers.CurrentUser.Id;
+                userview.Admin = OnlineUsers.CurrentUser.Admin;
+                User user = DB.Users.Find(userview.Id);
                 string PasswordNotChangedToken = (string)Request["PasswordNotChangedToken"];
                 if (userview.NewPassword.Equals(PasswordNotChangedToken))
-                {
-                    userview.Id = OnlineUsers.CurrentUser.Id;
-                    userview.Admin = OnlineUsers.CurrentUser.Admin;
-                    User user = DB.Users.Find(userview.Id);
                     userview.Password = user.Password;
-                }
                 else
-                {
                     userview.Password = userview.NewPassword;
-                }
                 DB.UpdateUser(userview);
                 userview.CopyToUserView(OnlineUsers.CurrentUser);
                 OnlineUsers.LastUpdate = DateTime.Now;

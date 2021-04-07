@@ -159,7 +159,13 @@ namespace EFA_DEMO.Controllers
 
         public ActionResult Repost(int id)
         {
-            db.RePost(id);
+            Post post = db.Posts.Find(id);
+            if (post != null)
+            {
+                if (post.UserId == OnlineUsers.CurrentUser.Id || OnlineUsers.CurrentUser.Admin)
+                    db.RePost(id);
+            }
+
             return RedirectToAction("Index");
         }
 

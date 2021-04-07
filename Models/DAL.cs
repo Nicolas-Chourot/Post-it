@@ -8,6 +8,42 @@ namespace EFA_DEMO.Models
 {
     public static class DAL
     {
+        private static DbContextTransaction Transaction
+        {
+            get
+            {
+                if (HttpContext.Current != null)
+                {
+                    return (DbContextTransaction)HttpContext.Current.Session["Transaction"];
+                }
+                return null;
+            }
+            set
+            {
+                if (HttpContext.Current != null)
+                {
+                    HttpContext.Current.Session["Transaction"] = value;
+                }
+            }
+        }
+        private static void BeginTransaction(DBEntities DB)
+        {
+            if (Transaction != null)
+                throw new Exception("Transaction en cours! Impossible d'en démarrer une nouvelle!");
+            Transaction = DB.Database.BeginTransaction();
+        }
+        private static void Commit()
+        {
+            if (Transaction != null)
+            {
+                Transaction.Commit();
+                Transaction.Dispose();
+                Transaction = null;
+            }
+            else
+                throw new Exception("Aucune ransaction en cours! Impossible de mettre à jour la base de ddonnées!");
+        }
+
         public static DateTime PostsLastUpdate
         {
             get
@@ -140,14 +176,16 @@ namespace EFA_DEMO.Models
         }
         public static void ClearAllLogs(this DBEntities DB)
         {
+            BeginTransaction(DB);
             DB.Logs.RemoveRange(DB.Logs);
             DB.SaveChanges();
+            Commit();
         }
 
         public static PostView AddPost(this DBEntities DB, PostView postView)
         {
             Post post = postView.ToPost();
-
+            BeginTransaction(DB);
             post = DB.Posts.Add(post);
             DB.SaveChanges();
             if (post.ParentPostId != 0)
@@ -156,6 +194,7 @@ namespace EFA_DEMO.Models
                 DB.PostsChilds.Add(pc);
                 DB.SaveChanges();
             }
+            Commit();
             PostsLastUpdate = DateTime.Now;
             return post.ToPostView();
         }
@@ -181,23 +220,7 @@ namespace EFA_DEMO.Models
             }
             return false;
         }
-
-
-        public static void RemoveChilds(this DBEntities DB, int postId)
-        {
-            var childs = DB.PostsChilds.Where(pc => pc.PostId == postId);
-
-            if (childs != null)
-                foreach (PostsChild child in childs)
-                {
-                    DB.RemoveChilds(child.PostId);
-                    Post post = DB.Posts.Find(child.PostId);
-                    DB.PostsChilds.Remove(child);
-                    if (post != null)
-                        DB.Posts.Remove(post);
-                }
-        }
-        public static bool RemovePost(this DBEntities DB, int Id)
+        public static bool DoRemovePost(this DBEntities DB, int Id)
         {
             Post postToDelete = DB.Posts.Find(Id);
             if (postToDelete != null)
@@ -208,7 +231,7 @@ namespace EFA_DEMO.Models
                 {
                     for (int i = 0; i < childs.Count(); i++)
                     {
-                        DB.RemovePost(childs[i].ChildPostId);
+                        DB.DoRemovePost(childs[i].ChildPostId);
                     }
                 }
                 PostsChild childpostToDelete = DB.PostsChilds.Where(pc => pc.ChildPostId == Id).FirstOrDefault();
@@ -221,22 +244,14 @@ namespace EFA_DEMO.Models
             }
             return false;
         }
-        public static List<string> PostParents(this DBEntities DB, int postId)
+        public static bool RemovePost(this DBEntities DB, int Id)
         {
-            List<string> parents = new List<string>();
-            Post post = DB.Posts.Find(postId);
-            do
-            {
-                if (post != null)
-                {
-                    parents.Insert(0, post.Title + "_" + post.Id);
-                    Post parent = DB.Posts.Find(post.ParentPostId);
-                }
-            }
-            while (post != null);
-            return parents;
+            BeginTransaction(DB);
+            DB.DoRemovePost(Id);
+            Commit();
+            return true;
         }
-
+        
         public static bool AlreadyLike(this DBEntities DB, int postId, int userId)
         {
             Like like = DB.Likes.Where(l => (l.UserId == userId) && (l.PostId == postId)).FirstOrDefault();
@@ -247,6 +262,7 @@ namespace EFA_DEMO.Models
             Post post = DB.Posts.Find(postId);
             if (post != null)
             {
+                BeginTransaction(DB);
                 User user = DB.Users.Find(userId);
                 if (user != null)
                 {
@@ -270,6 +286,7 @@ namespace EFA_DEMO.Models
                         PostsLastUpdate = DateTime.Now;
                     }
                 }
+                Commit();
             }
         }
         public static void RemoveLikes(this DBEntities DB, int postId, int userId)
@@ -277,6 +294,7 @@ namespace EFA_DEMO.Models
             Post post = DB.Posts.Find(postId);
             if (post != null)
             {
+                BeginTransaction(DB);
                 User user = DB.Users.Find(userId);
                 if (user != null)
                 {
@@ -291,6 +309,7 @@ namespace EFA_DEMO.Models
                         PostsLastUpdate = DateTime.Now;
                     }
                 }
+                Commit();
             }
         }
         public static List<UserView> FindLikers(this DBEntities DB, int postId)

@@ -237,24 +237,26 @@
 {
     bool editMode = postView.Id == (int)Session["EditingPostId"];
     var Url = new System.Web.Mvc.UrlHelper(HttpContext.Current.Request.RequestContext);
-    <div class="post">
-        <div class="postHeader">
-            @Helper.Poster(postView.User, postView.CreationDate)
 
-            @if (!editMode && (postView.UserId == user.Id || user.Admin))
-            {
-                <div> &nbsp; </div>
-                <div class="waitCmd">
-                    @Helper.GlyphiconAjaxAction("SetEditMode/" + postView.Id, "glyphicon-edit", "Modifier " + postView.Title)
-                </div>
-                @Helper.GlyphiconConfirmAction("Delete/" + postView.Id, "glyphicon-remove-circle", "Effacer " + postView.Title)
-            }
-            else
-            {
-                <div> &nbsp; </div> <div> &nbsp; </div> <div> &nbsp; </div>
-            }
-            @if (!editMode)
-            {
+    if (!editMode)
+    {
+        <div class="post">
+            <div class="postHeader">
+                @Helper.Poster(postView.User, postView.CreationDate)
+
+                @if (postView.UserId == user.Id || user.Admin)
+                {
+                    <div> &nbsp; </div>
+                    <div class="waitCmd">
+                        @Helper.GlyphiconAjaxAction("SetEditMode/" + postView.Id, "glyphicon-edit", "Modifier " + postView.Title)
+                    </div>
+                    @Helper.GlyphiconConfirmAction("Delete/" + postView.Id, "glyphicon-remove-circle", "Effacer " + postView.Title)
+                }
+                else
+                {
+                    <div> &nbsp; </div> <div> &nbsp; </div> <div> &nbsp; </div>
+                }
+
                 @Helper.GlyphiconAjaxAction("CreatePost/" + postView.Id, "glyphicon-comment", "Commenter...")
                 <div>
                     <div style="text-align:right">
@@ -280,47 +282,51 @@
                         @Helper.GlyphiconAjaxAction("AddLike/" + postView.Id, "glyphicon-thumbs-up", "Vous aimez ...")
                     }
                 </div>
-            }
-            else
-            {
-                <div> &nbsp; </div> <div> &nbsp; </div> <div> &nbsp; </div>
-            }
-        </div>
-        <div class="postTitle">
-            @if (!editMode)
-            {
+
+            </div>
+            <div class="postTitle">
                 <div class="title">
                     @postView.Title
                 </div>
-            }
-            else
+            </div>
+            <div class="postContent">@Helper.ParseContent(postView.Content)</div>
+            <div class="tags">
+                <div style="font-size:16px;">@Helper.Tags(postView.Tags)</div>
+            </div>
+            @if (postView.PostsChilds != null)
             {
+                if (postView.PostsChilds.Count > 0)
+                {
+                    <div class="postChild">
+                        @foreach (EFA_DEMO.Models.PostsChild postchild in postView.PostsChilds)
+                        {
+                            EFA_DEMO.Models.PostView childPostview = new EFA_DEMO.Models.PostView();
+                            childPostview.Copy(postchild.PostChild);
+                            @Helper.PostComment(childPostview, user, postView.User);
+                        }
+                    </div>
+                }
+            }
+        </div>
+    }
+    else
+    {
+        <div class="post">
+            <div class="postHeader">
+                @Helper.Poster(postView.User, postView.CreationDate)
+                <div> &nbsp; </div> <div> &nbsp; </div> <div> &nbsp; </div>
+                <div> &nbsp; </div> <div> &nbsp; </div> <div> &nbsp; </div>
+            </div>
+            <div class="postTitle">
                 <input type="hidden" id="postId" value="@postView.Id" />
-
                 <div>
                     <input id="Title" value=" @postView.Title" placeholder="Titre" class="form-control" />
                 </div>
-            }
-        </div>
-        @if (!editMode)
-        {
-            <div class="postContent">@Helper.ParseContent(postView.Content)</div>
-        }
-        else
-        {
+            </div>
             <div class="postContentEdit">
                 <br />
                 <textarea id="Content" class="form-control replyContent" style="width:100%" postId="@postView.Id" placeholder="Contenu" required>@postView.Content</textarea>
             </div>
-        }
-        @if (!editMode)
-        {
-            <div class="tags">
-                <div style="font-size:16px;">@Helper.Tags(postView.Tags)</div>
-            </div>
-        }
-        else
-        {
             <br>
             <div>
                 <input id="Tags" value=" @postView.Tags" placeholder="Étiquettes" class="form-control" />
@@ -331,23 +337,24 @@
                 &nbsp;
                 <button id="CancelEdit" class="btn btn-default">Annuler</button>
             </div>
-        }
 
-        @if (postView.PostsChilds != null)
-        {
-            if (postView.PostsChilds.Count > 0)
+
+            @if (postView.PostsChilds != null)
             {
-                <div class="postChild">
-                    @foreach (EFA_DEMO.Models.PostsChild postchild in postView.PostsChilds)
-                    {
-                        EFA_DEMO.Models.PostView childPostview = new EFA_DEMO.Models.PostView();
-                        childPostview.Copy(postchild.PostChild);
-                        @Helper.PostComment(childPostview, user, postView.User);
-                    }
-                </div>
+                if (postView.PostsChilds.Count > 0)
+                {
+                    <div class="postChild">
+                        @foreach (EFA_DEMO.Models.PostsChild postchild in postView.PostsChilds)
+                        {
+                            EFA_DEMO.Models.PostView childPostview = new EFA_DEMO.Models.PostView();
+                            childPostview.Copy(postchild.PostChild);
+                            @Helper.PostComment(childPostview, user, postView.User);
+                        }
+                    </div>
+                }
             }
-        }
-    </div>
+        </div>
+    }
 }
 
 @helper UserOfTargetPost(EFA_DEMO.Models.UserView user = null, string prefix = "")
@@ -355,7 +362,7 @@
     var Url = new System.Web.Mvc.UrlHelper(HttpContext.Current.Request.RequestContext);
     if (user != null)
     {
-        string targetUser = prefix +  user.FullName.Trim() ;
+        string targetUser = prefix + user.FullName.Trim();
         string targetUrl = Url.Action("SetRootUserPosts/") + user.Id;
         <span class="targetUser"><a href="@targetUrl">@targetUser</a></span>
     }
@@ -370,24 +377,25 @@
 {
     var Url = new System.Web.Mvc.UrlHelper(HttpContext.Current.Request.RequestContext);
     bool editMode = postView.Id == (int)Session["EditingPostId"];
-    <div class="post comment">
-        <div class="postHeader">
-            @Helper.Poster(postView.User, postView.CreationDate)
+    if (!editMode)
+    {
 
-            @if (!editMode && (postView.UserId == user.Id || user.Admin))
-            {
-                <div> &nbsp; </div>
-                <div class="waitCmd">
-                    @Helper.GlyphiconAjaxAction("SetEditMode/" + postView.Id, "glyphicon-edit", "Modifier " + postView.Title)
-                </div>
-                @Helper.GlyphiconConfirmAction("Delete/" + postView.Id, "glyphicon-remove-circle", "Effacer " + postView.Title)
-            }
-            else
-            {
-                <div> &nbsp; </div> <div> &nbsp; </div> <div> &nbsp; </div>
-            }
-            @if (!editMode)
-            {
+        <div class="post comment">
+            <div class="postHeader">
+                @Helper.Poster(postView.User, postView.CreationDate)
+
+                @if (postView.UserId == user.Id || user.Admin)
+                {
+                    <div> &nbsp; </div>
+                    <div class="waitCmd">
+                        @Helper.GlyphiconAjaxAction("SetEditMode/" + postView.Id, "glyphicon-edit", "Modifier " + postView.Title)
+                    </div>
+                    @Helper.GlyphiconConfirmAction("Delete/" + postView.Id, "glyphicon-remove-circle", "Effacer " + postView.Title)
+                }
+                else
+                {
+                    <div> &nbsp; </div> <div> &nbsp; </div> <div> &nbsp; </div>
+                }
                 @Helper.GlyphiconAjaxAction("CreatePost/" + postView.Id, "glyphicon-comment", "Commenter...")
                 <div>
                     <div style="text-align:right">
@@ -406,48 +414,62 @@
                 <div class="waitCmd">
                     @Helper.GlyphiconAjaxAction("AddLike/" + postView.Id, "glyphicon-thumbs-up", "ajouter/enlever...")
                 </div>
-            }
-            else
+            </div>
+            <div class="postContent">@UserOfTargetPost(parentUser, "@") @Helper.ParseContent(postView.Content)</div>
+            @if (postView.PostsChilds != null)
             {
-                <div> &nbsp; </div> <div> &nbsp; </div>
+                if (postView.PostsChilds.Count > 0)
+                {
+                    <div class="postChild">
+
+                        @foreach (EFA_DEMO.Models.PostsChild postchild in postView.PostsChilds)
+                        {
+                            EFA_DEMO.Models.PostView childPostview = new EFA_DEMO.Models.PostView();
+                            childPostview.Copy(postchild.PostChild);
+                            @Helper.PostComment(childPostview, user, postView.User);
+                        }
+                    </div>
+                }
             }
         </div>
+    }
+    else
+    {
+        <div class="post comment">
+            <div class="postHeader">
+                @Helper.Poster(postView.User, postView.CreationDate)
 
-        @if (!editMode)
-        {
-            <div class="postContent">@UserOfTargetPost(parentUser, "@") @Helper.ParseContent(postView.Content)</div>
-        }
-        else
-        {
+                <div> &nbsp; </div> <div> &nbsp; </div> <div> &nbsp; </div>
+                <div> &nbsp; </div> <div> &nbsp; </div>
+            </div>
             <div class="postContentEdit">
                 @UserOfTargetPost(parentUser) <br />
                 <input type="hidden" id="postId" value="@postView.Id" />
                 <textarea class="form-control replyContent"
                           id="replyContent"
-                          style="width:100%"
-                          required>@postView.Content</textarea>
+                          style="width:100%">@postView.Content</textarea>
                 <br>
                 <div class="waitCmd">
-                    <button id="SubmitPostViewReplyContent" class="btn btn-primary">Soumettre</button>
+                    <input type="submit" id="SubmitPostViewReplyContent" class="btn btn-primary" value="Soumettre">
                     &nbsp;
                     <button id="CancelEdit" class="btn btn-default">Annuler</button>
                 </div>
             </div>
-        }
-        @if (postView.PostsChilds != null)
-        {
-            if (postView.PostsChilds.Count > 0)
+            @if (postView.PostsChilds != null)
             {
-                <div class="postChild">
+                if (postView.PostsChilds.Count > 0)
+                {
+                    <div class="postChild">
 
-                    @foreach (EFA_DEMO.Models.PostsChild postchild in postView.PostsChilds)
-                    {
-                        EFA_DEMO.Models.PostView childPostview = new EFA_DEMO.Models.PostView();
-                        childPostview.Copy(postchild.PostChild);
-                        @Helper.PostComment(childPostview, user, postView.User);
-                    }
-                </div>
+                        @foreach (EFA_DEMO.Models.PostsChild postchild in postView.PostsChilds)
+                        {
+                            EFA_DEMO.Models.PostView childPostview = new EFA_DEMO.Models.PostView();
+                            childPostview.Copy(postchild.PostChild);
+                            @Helper.PostComment(childPostview, user, postView.User);
+                        }
+                    </div>
+                }
             }
-        }
-    </div>
+        </div>
+    }
 }
