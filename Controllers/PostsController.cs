@@ -78,7 +78,7 @@ namespace EFA_DEMO.Controllers
         {
             RefreshPostsLastRequest = new DateTime(0);
             Session["PostPageCount"] = (int)Session["PostPageCount"] + 1;
-            return new JsonResult { Data = "Next page", JsonRequestBehavior = JsonRequestBehavior.AllowGet };
+            return new JsonResult { Data = "Next page - " + (int)Session["PostPageCount"], JsonRequestBehavior = JsonRequestBehavior.AllowGet };
 
         }
 

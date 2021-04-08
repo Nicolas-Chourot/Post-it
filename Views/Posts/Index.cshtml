@@ -21,7 +21,7 @@
     @Scripts.Render("~/bundles/partialRefresh")
     @Scripts.Render("~/bundles/autoComplete")
 
-<script>
+    <script>
         let confirmActionLink = "";
         $(() => {
             console.log("index loaded...")
@@ -30,6 +30,9 @@
             installConfirmDialog();
             installLikersDialog();
             updateEventHandlers();
+            window.onbeforeunload = function ()  {
+                ajaxActionCall("@Url.Action("CancelEditMode")");
+            };
         });
 
         function installConfirmDialog() {
@@ -198,5 +201,5 @@
         if (replyContent != null)
             $("#replyContent").focus();
     }
-</script>
+    </script>
 }

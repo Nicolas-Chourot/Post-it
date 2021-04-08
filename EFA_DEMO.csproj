@@ -187,10 +187,14 @@
     <Content Include="App_Data\Tables SQL Definitions.txt" />
     <Content Include="Avatars\Loading_icon.gif" />
     <Content Include="Avatars\no_avatar.png" />
+    <Content Include="Content\AboutPict.PNG" />
     <Content Include="Content\bootstrap-theme.css" />
     <Content Include="Content\bootstrap-theme.min.css" />
     <Content Include="Content\bootstrap.css" />
     <Content Include="Content\bootstrap.min.css" />
+    <Content Include="Content\images\js_jquery-ui-1.12.1_images_ui-icons_444444_256x240.png" />
+    <Content Include="Content\images\ui-icons_555555_256x240.png" />
+    <Content Include="Content\images\ui-icons_777777_256x240.png" />
     <Content Include="Content\Post-it.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -307,6 +311,7 @@
     <Content Include="Content\themes\ui-darkness\jquery.ui.slider.css" />
     <Content Include="Content\themes\ui-darkness\jquery.ui.tabs.css" />
     <Content Include="Content\themes\ui-darkness\jquery.ui.theme.css" />
+    <Content Include="Content\waiting.gif" />
     <Content Include="favicon.ico" />
     <Content Include="fonts\glyphicons-halflings-regular.svg" />
     <Content Include="Global.asax" />
