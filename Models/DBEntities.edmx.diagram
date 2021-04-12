@@ -13,7 +13,7 @@
         <AssociationConnector Association="DBModel.FK_UserId" ManuallyRouted="false" />
         <AssociationConnector Association="DBModel.FK_Creator_UserId" ManuallyRouted="false" />
         <AssociationConnector Association="DBModel.FK_Likes_UserId" />
-        <EntityTypeShape EntityType="DBModel.PostsChild" Width="1.5" PointX="8.625" PointY="0.5" />
+        <EntityTypeShape EntityType="DBModel.PostsChild" Width="1.5" PointX="8.5" PointY="0.5" />
         <AssociationConnector Association="DBModel.FK_PostId" />
         <AssociationConnector Association="DBModel.FK_PostChildsPostId2" />
       </Diagram>
