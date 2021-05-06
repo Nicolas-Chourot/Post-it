@@ -20,7 +20,7 @@
 //  Example:
 //
 //  With the following:
-//  <div class='imageUploader' id='0' controlId = 'PhotoImageData' imageSrc='/Photos/No_image.png' waitingImage="/PhotosManager/Photos/Loading_icon.gif"> </div>
+//  <div class='imageUploader' id='0' controlId='PhotoImageData' imageSrc='/Photos/No_image.png' waitingImage="/PhotosManager/Photos/Loading_icon.gif"> </div>
 //  <span class="field-validation-valid text-danger" data-valmsg-for="PhotoImageData" data-valmsg-replace="true"></span>
 //
 //

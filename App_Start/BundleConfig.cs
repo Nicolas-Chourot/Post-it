@@ -38,7 +38,7 @@ namespace EFA_DEMO
                      "~/Content/bootstrap.css",
                      "~/Content/site.css",
                      "~/Content/themes/base/jquery-ui.css",
-                      "~/Content/themes/ui-darkness/jquery-ui.all.css",
+                     "~/Content/themes/ui-darkness/jquery-ui.all.css",
                      "~/Content/themes/ui-darkness/jquery-ui.base.css",
                      "~/Content/themes/ui-darkness/jquery-ui.dialog.css",
                      "~/Content/themes/ui-darkness/jquery-ui.theme.css",
